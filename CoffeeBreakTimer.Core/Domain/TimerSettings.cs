@@ -1,6 +1,6 @@
 ﻿namespace CoffeeBreakTimer.Core.Domain;
 
-// Det här är kärn-datan för timern
+// Det här är kärn-datan för timer
 public class TimerSettings
 {
     public int WorkMinutes { get; set; }
