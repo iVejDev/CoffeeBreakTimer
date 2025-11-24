@@ -9,7 +9,7 @@ namespace CoffeeBreakTimer.App.Services;
 */
 public class InMemorySettingsRepository : ISettingsRepository
 {
-    private TimerSettings _settings = new() { WorkMinutes = 25, BreakMinutes = 5 };
+    private TimerSettings _settings = new() { WorkMinutes = 15, BreakMinutes = 5 };
 
     public TimerSettings Load() => _settings;
 
