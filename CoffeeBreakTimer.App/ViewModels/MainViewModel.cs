@@ -11,8 +11,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly CoffeeTimerService _timerService;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly CancellationTokenSource _quoteRotationTokenSource = new();
     private bool _isLoadingSettings;
     private bool _disposed;
+    private int _quoteIndex;
+    private QuoteMode _quoteMode = QuoteMode.Focus;
+
+    private static readonly string[] FocusQuotes =
+    [
+        "Small steps. Deep focus.",
+        "Let the next minute be enough.",
+        "Quiet effort compounds.",
+        "Stay with one good task.",
+        "Make room for the work."
+    ];
+
+    private static readonly string[] RestQuotes =
+    [
+        "Breathe out. You earned this.",
+        "Let the coffee come back.",
+        "A soft pause is productive too.",
+        "Rest is part of the rhythm.",
+        "Return gently, not urgently."
+    ];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SessionTitle))]
@@ -42,7 +63,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(BreakMinutesDisplay))]
     private double breakMinutes = TimerSettings.DefaultBreakMinutes;
 
-    public MainViewModel(CoffeeTimerService timerService, ISettingsRepository settingsRepository)
+    [ObservableProperty]
+    private string quoteText = FocusQuotes[0];
+
+    public MainViewModel(
+        CoffeeTimerService timerService,
+        ISettingsRepository settingsRepository)
     {
         _timerService = timerService;
         _settingsRepository = settingsRepository;
@@ -50,6 +76,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _timerService.StateChanged += OnTimerStateChanged;
         LoadSettings();
         ApplySnapshot(_timerService.CurrentSnapshot);
+        _ = RotateQuotesAsync(_quoteRotationTokenSource.Token);
     }
 
     public string SessionTitle => SessionType == SessionType.Work ? "Focus" : "Break";
@@ -112,6 +139,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         _timerService.StateChanged -= OnTimerStateChanged;
+        _quoteRotationTokenSource.Cancel();
+        _quoteRotationTokenSource.Dispose();
         _disposed = true;
     }
 
@@ -182,6 +211,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Progress = snapshot.Progress;
         CoffeeLevel = snapshot.CoffeeLevel.Value;
         TimeDisplay = FormatTime(snapshot.Remaining);
+        UpdateQuoteMode(snapshot.SessionType == SessionType.Break ? QuoteMode.Rest : QuoteMode.Focus);
     }
 
     private void RefreshCommandState()
@@ -198,5 +228,49 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         var totalMinutes = (int)time.TotalMinutes;
         return $"{totalMinutes:00}:{time.Seconds:00}";
+    }
+
+    private async Task RotateQuotesAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+
+            MainThread.BeginInvokeOnMainThread(ShowNextQuote);
+        }
+    }
+
+    private void UpdateQuoteMode(QuoteMode quoteMode)
+    {
+        if (_quoteMode == quoteMode)
+        {
+            return;
+        }
+
+        _quoteMode = quoteMode;
+        _quoteIndex = 0;
+        QuoteText = CurrentQuotes[0];
+    }
+
+    private void ShowNextQuote()
+    {
+        var quotes = CurrentQuotes;
+        _quoteIndex = (_quoteIndex + 1) % quotes.Length;
+        QuoteText = quotes[_quoteIndex];
+    }
+
+    private string[] CurrentQuotes => _quoteMode == QuoteMode.Rest ? RestQuotes : FocusQuotes;
+
+    private enum QuoteMode
+    {
+        Focus,
+        Rest
     }
 }

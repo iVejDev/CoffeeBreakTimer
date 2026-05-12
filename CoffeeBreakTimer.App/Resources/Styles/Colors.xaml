@@ -17,7 +17,9 @@
     <Color x:Key="AccentDark">#D39A68</Color>
     <Color x:Key="Coffee">#6F3E22</Color>
     <Color x:Key="CoffeeCream">#C98950</Color>
-    <Color x:Key="BreakBlue">#77AFC0</Color>
+    <Color x:Key="Latte">#B97843</Color>
+    <Color x:Key="Espresso">#4A2414</Color>
+    <Color x:Key="Cappuccino">#D4A06C</Color>
     <Color x:Key="Cream">#FFE7C7</Color>
     <Color x:Key="Steam">#F9E8D3</Color>
 </ResourceDictionary>

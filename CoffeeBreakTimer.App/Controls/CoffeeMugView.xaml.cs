@@ -26,6 +26,7 @@ public partial class CoffeeMugView : ContentView
         propertyChanged: OnVisualStateChanged);
 
     private CancellationTokenSource? _animationTokenSource;
+    private SessionType _previousSessionType = SessionType.Work;
 
     public CoffeeMugView()
     {
@@ -60,6 +61,7 @@ public partial class CoffeeMugView : ContentView
         var view = (CoffeeMugView)bindable;
         view.UpdateLiquid(true);
         view.UpdateAmbientState();
+        view.DetectSessionTransition();
     }
 
     private void OnLoaded(object? sender, EventArgs e)
@@ -77,17 +79,19 @@ public partial class CoffeeMugView : ContentView
 
     private void UpdateLiquid(bool animate)
     {
-        var containerHeight = LiquidClip.Height > 0 ? LiquidClip.Height : 126;
+        var containerHeight = LiquidClip.Height > 0 ? LiquidClip.Height : 142;
         var targetHeight = Math.Clamp(CoffeeLevel, 0.0, 1.0) * containerHeight;
 
         LiquidView.Background = CreateLiquidBrush();
         LiquidView.AbortAnimation("CoffeeLevel");
-        LiquidHighlight.AbortAnimation("CoffeeHighlight");
+        LiquidSurfaceLayer.AbortAnimation("CoffeeSurface");
+        LiquidWave.AbortAnimation("CoffeeWave");
+        LiquidWaveBack.AbortAnimation("CoffeeWaveBack");
 
         if (!animate)
         {
             LiquidView.HeightRequest = targetHeight;
-            UpdateHighlight(targetHeight, false);
+            UpdateSurface(targetHeight);
             return;
         }
 
@@ -98,24 +102,22 @@ public partial class CoffeeMugView : ContentView
             new Animation(value =>
             {
                 LiquidView.HeightRequest = value;
-                UpdateHighlight(value, false);
-            }, startHeight, targetHeight, Easing.CubicInOut),
-            length: 420);
+                UpdateSurface(value);
+            }, startHeight, targetHeight, Easing.Linear),
+            length: 110);
     }
 
-    private void UpdateHighlight(double liquidHeight, bool animate)
+    private void UpdateSurface(double liquidHeight)
     {
-        var opacity = liquidHeight > 14 ? 0.72 : 0;
-        var marginBottom = Math.Max(0, liquidHeight - 14);
-        LiquidHighlight.Margin = new Thickness(0, 0, 0, marginBottom);
-
-        if (animate)
-        {
-            LiquidHighlight.FadeTo(opacity, 250, Easing.CubicOut);
-            return;
-        }
-
-        LiquidHighlight.Opacity = opacity;
+        var opacity = liquidHeight > 14 ? 0.92 : 0;
+        var marginBottom = Math.Max(0, liquidHeight - 15);
+        LiquidSurfaceLayer.Margin = new Thickness(0, 0, 0, marginBottom);
+        LiquidSheen.Opacity = liquidHeight > 34 ? 0.18 : 0;
+        LiquidSurfaceLayer.Opacity = opacity;
+        var bubbleOpacity = liquidHeight > 46 ? 1 : 0;
+        BubbleOne.Opacity = bubbleOpacity * 0.44;
+        BubbleTwo.Opacity = bubbleOpacity * 0.52;
+        BubbleThree.Opacity = bubbleOpacity * 0.38;
     }
 
     private Brush CreateLiquidBrush()
@@ -126,26 +128,22 @@ public partial class CoffeeMugView : ContentView
             EndPoint = new Point(1, 1)
         };
 
-        if (SessionType == SessionType.Break)
-        {
-            brush.GradientStops.Add(new GradientStop(Color.FromArgb("#A8D7DF"), 0));
-            brush.GradientStops.Add(new GradientStop(Color.FromArgb("#77AFC0"), 0.55f));
-            brush.GradientStops.Add(new GradientStop(Color.FromArgb("#4C7F91"), 1));
-            return brush;
-        }
-
-        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#C98950"), 0));
-        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#8D512C"), 0.58f));
-        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#5A2E18"), 1));
+        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#D4A06C"), 0));
+        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#9B5E32"), 0.46f));
+        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#5B2B18"), 0.78f));
+        brush.GradientStops.Add(new GradientStop(Color.FromArgb("#3C1B0F"), 1));
         return brush;
     }
 
     private void UpdateAmbientState()
     {
-        var showSteam = IsActive && SessionType == SessionType.Work;
-        SteamLayer.FadeTo(showSteam ? 0.78 : 0.24, 300, Easing.CubicOut);
-        GlowView.FadeTo(IsActive ? 0.78 : 0.2, 450, Easing.CubicOut);
-        GlowView.ScaleTo(IsActive ? 1.08 : 0.94, 450, Easing.CubicOut);
+        SteamLayer.FadeTo(GetSteamOpacity(), 350, Easing.CubicOut);
+
+        if (!IsActive)
+        {
+            GlowView.FadeTo(0.18, 520, Easing.CubicOut);
+            GlowView.ScaleTo(0.96, 520, Easing.CubicOut);
+        }
     }
 
     private void StartAmbientAnimations()
@@ -154,19 +152,15 @@ public partial class CoffeeMugView : ContentView
         _animationTokenSource = new CancellationTokenSource();
         var token = _animationTokenSource.Token;
 
-        _ = RunBreathingAnimationAsync(token);
         _ = RunSteamAnimationAsync(SteamOne, 0, token);
         _ = RunSteamAnimationAsync(SteamTwo, 220, token);
         _ = RunSteamAnimationAsync(SteamThree, 440, token);
-    }
-
-    private async Task RunBreathingAnimationAsync(CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            await MugStage.TranslateTo(0, -7, 1800, Easing.SinInOut);
-            await MugStage.TranslateTo(0, 0, 1800, Easing.SinInOut);
-        }
+        _ = RunSteamAnimationAsync(SteamFour, 660, token);
+        _ = RunCoffeeSurfaceAnimationAsync(token);
+        _ = RunGlowBreathingAnimationAsync(token);
+        _ = RunBubbleAnimationAsync(BubbleOne, 0, token);
+        _ = RunBubbleAnimationAsync(BubbleTwo, 620, token);
+        _ = RunBubbleAnimationAsync(BubbleThree, 1180, token);
     }
 
     private async Task RunSteamAnimationAsync(VisualElement steam, uint delay, CancellationToken token)
@@ -175,14 +169,109 @@ public partial class CoffeeMugView : ContentView
 
         while (!token.IsCancellationRequested)
         {
-            steam.TranslationY = 10;
-            steam.Opacity = IsActive && SessionType == SessionType.Work ? 0.65 : 0.18;
+            steam.TranslationY = 12;
+            steam.Scale = 0.96;
+            steam.Opacity = GetSteamOpacity();
 
             await Task.WhenAll(
-                steam.TranslateTo(0, -16, 2100, Easing.SinOut),
-                steam.FadeTo(IsActive && SessionType == SessionType.Work ? 0.08 : 0.02, 2100, Easing.CubicOut));
+                steam.TranslateTo(0, -18, 2600, Easing.SinOut),
+                steam.ScaleTo(1.08, 2600, Easing.SinInOut),
+                steam.FadeTo(Math.Max(0.03, GetSteamOpacity() * 0.18), 2600, Easing.CubicOut));
 
             await Task.Delay(120, token);
+        }
+    }
+
+    private async Task RunCoffeeSurfaceAnimationAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            await Task.WhenAll(
+                LiquidWave.TranslateTo(42, 0, 1600, Easing.SinInOut),
+                LiquidWaveBack.TranslateTo(-34, 0, 1800, Easing.SinInOut),
+                LiquidSurfaceLayer.RotateTo(1.2, 1600, Easing.SinInOut));
+
+            await Task.WhenAll(
+                LiquidWave.TranslateTo(-20, 0, 1700, Easing.SinInOut),
+                LiquidWaveBack.TranslateTo(26, 0, 1500, Easing.SinInOut),
+                LiquidSurfaceLayer.RotateTo(-1.2, 1700, Easing.SinInOut));
+        }
+    }
+
+    private async Task RunGlowBreathingAnimationAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            if (!IsActive)
+            {
+                await Task.Delay(240, token);
+                continue;
+            }
+
+            await Task.WhenAll(
+                GlowView.ScaleTo(1.14, 1600, Easing.SinInOut),
+                GlowView.FadeTo(0.86, 1600, Easing.SinInOut));
+
+            await Task.WhenAll(
+                GlowView.ScaleTo(1.02, 1700, Easing.SinInOut),
+                GlowView.FadeTo(0.56, 1700, Easing.SinInOut));
+        }
+    }
+
+    private async Task RunBubbleAnimationAsync(VisualElement bubble, int delay, CancellationToken token)
+    {
+        await Task.Delay(delay, token);
+
+        while (!token.IsCancellationRequested)
+        {
+            var visible = CoffeeLevel > 0.18;
+            bubble.TranslationY = 0;
+            bubble.Scale = 0.72;
+            bubble.Opacity = visible ? 0.42 : 0;
+
+            await Task.WhenAll(
+                bubble.TranslateTo(0, -58, 2800, Easing.SinOut),
+                bubble.ScaleTo(1.18, 2800, Easing.SinInOut),
+                bubble.FadeTo(0, 2800, Easing.CubicOut));
+
+            await Task.Delay(450, token);
+        }
+    }
+
+    private double GetSteamOpacity()
+    {
+        if (!IsActive)
+        {
+            return 0.16;
+        }
+
+        var levelIntensity = Math.Clamp(CoffeeLevel, 0.0, 1.0);
+        return 0.10 + (levelIntensity * 0.84);
+    }
+
+    private void DetectSessionTransition()
+    {
+        if (_previousSessionType == SessionType.Work && SessionType == SessionType.Break)
+        {
+            _ = RunFocusFinishedAttentionAsync();
+        }
+
+        _previousSessionType = SessionType;
+    }
+
+    private async Task RunFocusFinishedAttentionAsync()
+    {
+        MugStage.AbortAnimation("FocusFinishedPulse");
+        MugStage.AbortAnimation("FocusFinishedShake");
+
+        for (var i = 0; i < 3; i++)
+        {
+            await MugStage.ScaleTo(1.045, 140, Easing.CubicOut);
+            await MugStage.TranslateTo(-5, 0, 60, Easing.CubicOut);
+            await MugStage.TranslateTo(5, 0, 80, Easing.CubicInOut);
+            await MugStage.TranslateTo(0, 0, 70, Easing.CubicOut);
+            await MugStage.ScaleTo(1, 180, Easing.CubicInOut);
+            await Task.Delay(120);
         }
     }
 }

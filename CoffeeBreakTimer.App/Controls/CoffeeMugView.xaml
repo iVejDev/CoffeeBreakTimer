@@ -2,25 +2,28 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CoffeeBreakTimer.App.Controls.CoffeeMugView"
-             WidthRequest="{OnIdiom Phone=320, Desktop=380}"
-             HeightRequest="{OnIdiom Phone=330, Desktop=370}">
+             WidthRequest="{OnIdiom Phone=280, Desktop=320}"
+             HeightRequest="{OnIdiom Phone=300, Desktop=335}">
     <Grid x:Name="MugStage"
+          WidthRequest="320"
+          HeightRequest="335"
           HorizontalOptions="Center"
           VerticalOptions="Center"
-          WidthRequest="380"
-          HeightRequest="360"
           InputTransparent="True">
         <Ellipse x:Name="GlowView"
-                 WidthRequest="250"
-                 HeightRequest="250"
+                 WidthRequest="300"
+                 HeightRequest="255"
                  HorizontalOptions="Center"
-                 VerticalOptions="Center"
+                 VerticalOptions="End"
+                 Margin="0,0,0,10"
                  Opacity="0">
             <Ellipse.Fill>
-                <RadialGradientBrush Center="0.5,0.5"
-                                     Radius="0.58">
-                    <GradientStop Color="#80D39A68"
+                <RadialGradientBrush Center="0.5,0.55"
+                                     Radius="0.62">
+                    <GradientStop Color="#66D39A68"
                                   Offset="0" />
+                    <GradientStop Color="#22A85D2D"
+                                  Offset="0.54" />
                     <GradientStop Color="#00D39A68"
                                   Offset="1" />
                 </RadialGradientBrush>
@@ -28,139 +31,318 @@
         </Ellipse>
 
         <Grid x:Name="SteamLayer"
-              HeightRequest="100"
-              WidthRequest="180"
+              HeightRequest="112"
+              WidthRequest="190"
               HorizontalOptions="Center"
               VerticalOptions="Start"
-              Margin="0,0,0,0"
-              Opacity="0.78">
+              Margin="0,-4,0,0"
+              Opacity="0.86">
             <Border x:Name="SteamOne"
-                    WidthRequest="8"
-                    HeightRequest="58"
+                    WidthRequest="10"
+                    HeightRequest="68"
                     HorizontalOptions="Start"
-                    Margin="44,18,0,0"
-                    Rotation="-12"
-                    BackgroundColor="{StaticResource Steam}">
+                    Margin="44,20,0,0"
+                    Rotation="-10">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="5" />
+                    <RoundRectangle CornerRadius="8" />
                 </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#00F9E8D3" Offset="0" />
+                        <GradientStop Color="#DDF9E8D3" Offset="0.42" />
+                        <GradientStop Color="#00F9E8D3" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
             </Border>
             <Border x:Name="SteamTwo"
-                    WidthRequest="8"
-                    HeightRequest="74"
+                    WidthRequest="12"
+                    HeightRequest="84"
                     HorizontalOptions="Center"
                     Margin="0,2,0,0"
-                    Rotation="8"
-                    BackgroundColor="{StaticResource Steam}">
+                    Rotation="7">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="5" />
+                    <RoundRectangle CornerRadius="9" />
                 </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#00F9E8D3" Offset="0" />
+                        <GradientStop Color="#F2F9E8D3" Offset="0.45" />
+                        <GradientStop Color="#00F9E8D3" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
             </Border>
             <Border x:Name="SteamThree"
-                    WidthRequest="8"
-                    HeightRequest="56"
+                    WidthRequest="10"
+                    HeightRequest="64"
                     HorizontalOptions="End"
-                    Margin="0,22,48,0"
-                    Rotation="16"
-                    BackgroundColor="{StaticResource Steam}">
+                    Margin="0,26,48,0"
+                    Rotation="14">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="5" />
+                    <RoundRectangle CornerRadius="8" />
                 </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#00F9E8D3" Offset="0" />
+                        <GradientStop Color="#DDF9E8D3" Offset="0.44" />
+                        <GradientStop Color="#00F9E8D3" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border x:Name="SteamFour"
+                    WidthRequest="7"
+                    HeightRequest="48"
+                    HorizontalOptions="Center"
+                    Margin="58,38,0,0"
+                    Rotation="-18"
+                    Opacity="0.55">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="6" />
+                </Border.StrokeShape>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="0,1">
+                        <GradientStop Color="#00F9E8D3" Offset="0" />
+                        <GradientStop Color="#CCF9E8D3" Offset="0.45" />
+                        <GradientStop Color="#00F9E8D3" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
             </Border>
         </Grid>
 
-        <Ellipse WidthRequest="230"
-                 HeightRequest="38"
+        <Ellipse WidthRequest="206"
+                 HeightRequest="36"
                  HorizontalOptions="Center"
                  VerticalOptions="End"
-                 Margin="0,0,0,31"
-                 Fill="#331B12"
-                 Opacity="0.35" />
+                 Margin="0,0,0,18"
+                 Fill="#32180F"
+                 Opacity="0.32" />
 
-        <Border WidthRequest="214"
-                HeightRequest="176"
+        <Border x:Name="MugHandle"
+                WidthRequest="78"
+                HeightRequest="118"
                 HorizontalOptions="Center"
                 VerticalOptions="End"
-                Margin="0,0,0,60"
-                StrokeThickness="0">
+                Margin="174,0,0,74"
+                BackgroundColor="Transparent"
+                Stroke="#DDA36F"
+                StrokeThickness="15">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="36" />
+                <RoundRectangle CornerRadius="54" />
+            </Border.StrokeShape>
+        </Border>
+
+        <Border x:Name="MugBody"
+                WidthRequest="180"
+                HeightRequest="196"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Margin="-8,0,0,42"
+                Stroke="#EAC6A4"
+                StrokeThickness="3">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="42" />
             </Border.StrokeShape>
             <Border.Shadow>
                 <Shadow Brush="#55200F06"
                         Offset="0,18"
                         Radius="28"
-                        Opacity="0.42" />
+                        Opacity="0.34" />
             </Border.Shadow>
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0"
                                      EndPoint="1,1">
-                    <GradientStop Color="#FFF5E4"
+                    <GradientStop Color="#FFF8EC"
                                   Offset="0" />
-                    <GradientStop Color="#E7B98C"
-                                  Offset="0.62" />
+                    <GradientStop Color="#F1D0AF"
+                                  Offset="0.48" />
                     <GradientStop Color="#C98758"
                                   Offset="1" />
                 </LinearGradientBrush>
             </Border.Background>
         </Border>
 
-        <Border WidthRequest="90"
-                HeightRequest="112"
-                HorizontalOptions="Center"
-                VerticalOptions="End"
-                Margin="210,0,0,91"
-                BackgroundColor="Transparent"
-                Stroke="#E8BE95"
-                StrokeThickness="18">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="52" />
-            </Border.StrokeShape>
-        </Border>
-
         <Border x:Name="LiquidClip"
-                WidthRequest="164"
-                HeightRequest="126"
+                WidthRequest="152"
+                HeightRequest="142"
                 HorizontalOptions="Center"
                 VerticalOptions="End"
-                Margin="-4,0,0,91"
+                Margin="-8,0,0,76"
                 StrokeThickness="0"
                 BackgroundColor="Transparent">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="30" />
+                <RoundRectangle CornerRadius="34" />
             </Border.StrokeShape>
-            <Grid>
+            <Grid IsClippedToBounds="True">
                 <Border x:Name="LiquidView"
                         VerticalOptions="End"
                         HorizontalOptions="Fill"
                         HeightRequest="0"
                         StrokeThickness="0">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="24" />
+                        <RoundRectangle CornerRadius="26" />
                     </Border.StrokeShape>
                 </Border>
-                <Border x:Name="LiquidHighlight"
-                        HeightRequest="12"
-                        WidthRequest="96"
+
+                <Ellipse x:Name="BubbleOne"
+                         WidthRequest="8"
+                         HeightRequest="8"
+                         HorizontalOptions="Start"
+                         VerticalOptions="End"
+                         Margin="42,0,0,20"
+                         Fill="#55F8D6A7"
+                         Opacity="0" />
+                <Ellipse x:Name="BubbleTwo"
+                         WidthRequest="5"
+                         HeightRequest="5"
+                         HorizontalOptions="Center"
+                         VerticalOptions="End"
+                         Margin="0,0,0,34"
+                         Fill="#66FFF0D2"
+                         Opacity="0" />
+                <Ellipse x:Name="BubbleThree"
+                         WidthRequest="7"
+                         HeightRequest="7"
+                         HorizontalOptions="End"
+                         VerticalOptions="End"
+                         Margin="0,0,44,26"
+                         Fill="#55F8D6A7"
+                         Opacity="0" />
+
+                <Grid x:Name="LiquidSurfaceLayer"
+                      WidthRequest="176"
+                      HeightRequest="38"
+                      HorizontalOptions="Center"
+                      VerticalOptions="End"
+                      Margin="0,0,0,0"
+                      Opacity="0">
+                    <Ellipse WidthRequest="146"
+                             HeightRequest="24"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Fill="#A66A3E" />
+                    <Ellipse WidthRequest="130"
+                             HeightRequest="18"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Fill="#D9AD7A"
+                             Opacity="0.62" />
+                    <Ellipse WidthRequest="54"
+                             HeightRequest="14"
+                             HorizontalOptions="Start"
+                             VerticalOptions="Center"
+                             Margin="26,1,0,0"
+                             Fill="#F1D2A8"
+                             Opacity="0.72" />
+                    <Ellipse WidthRequest="38"
+                             HeightRequest="11"
+                             HorizontalOptions="End"
+                             VerticalOptions="Center"
+                             Margin="0,0,34,2"
+                             Fill="#F6DEC0"
+                             Opacity="0.52" />
+                    <Ellipse x:Name="LiquidWaveBack"
+                             WidthRequest="102"
+                             HeightRequest="18"
+                             HorizontalOptions="End"
+                             VerticalOptions="Center"
+                             Margin="0,2,24,0"
+                             Fill="#F6C992"
+                             Opacity="0.30" />
+                    <Ellipse x:Name="LiquidWave"
+                             WidthRequest="82"
+                             HeightRequest="16"
+                             HorizontalOptions="Start"
+                             VerticalOptions="Center"
+                             Margin="24,0,0,0"
+                             Fill="#FFF1D7"
+                             Opacity="0.24" />
+                    <Border WidthRequest="105"
+                            HeightRequest="7"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            BackgroundColor="#55FFF2DD"
+                            Opacity="0.78"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="5" />
+                        </Border.StrokeShape>
+                    </Border>
+                </Grid>
+
+                <Border x:Name="LiquidSheen"
+                        HeightRequest="44"
+                        WidthRequest="46"
                         VerticalOptions="End"
-                        HorizontalOptions="Center"
-                        Margin="0,0,0,0"
-                        BackgroundColor="#40FFF4E4"
-                        Opacity="0.75"
+                        HorizontalOptions="Start"
+                        Margin="36,0,0,22"
+                        Rotation="18"
+                        Opacity="0.18"
                         StrokeThickness="0">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="8" />
+                        <RoundRectangle CornerRadius="22" />
                     </Border.StrokeShape>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="#88FFF4E4" Offset="0" />
+                            <GradientStop Color="#00FFF4E4" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
                 </Border>
             </Grid>
         </Border>
 
+        <Ellipse x:Name="MugRim"
+                 WidthRequest="184"
+                 HeightRequest="54"
+                 HorizontalOptions="Center"
+                 VerticalOptions="End"
+                 Margin="-8,0,0,186"
+                 Stroke="#F7D9BB"
+                 StrokeThickness="3">
+            <Ellipse.Fill>
+                <LinearGradientBrush StartPoint="0,0"
+                                     EndPoint="1,1">
+                    <GradientStop Color="#FFFDF7"
+                                  Offset="0" />
+                    <GradientStop Color="#F0C9A3"
+                                  Offset="0.68" />
+                    <GradientStop Color="#C98758"
+                                  Offset="1" />
+                </LinearGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Ellipse WidthRequest="142"
+                 HeightRequest="28"
+                 HorizontalOptions="Center"
+                 VerticalOptions="End"
+                 Margin="-8,0,0,199"
+                 Fill="#4A2414"
+                 Opacity="0.18" />
+
+        <Border WidthRequest="104"
+                HeightRequest="9"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Margin="-14,0,0,202"
+                BackgroundColor="#55FFF4E4"
+                StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="6" />
+            </Border.StrokeShape>
+        </Border>
+
         <Image Source="coffee_mug_outline.svg"
-               WidthRequest="380"
-               HeightRequest="326"
+               WidthRequest="306"
+               HeightRequest="306"
                HorizontalOptions="Center"
                VerticalOptions="End"
                Aspect="AspectFit"
+               Opacity="0.18"
                InputTransparent="True" />
     </Grid>
 </ContentView>

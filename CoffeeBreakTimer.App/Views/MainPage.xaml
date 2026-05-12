@@ -6,15 +6,18 @@
              x:Class="CoffeeBreakTimer.App.Views.MainPage"
              x:DataType="viewModels:MainViewModel"
              NavigationPage.HasNavigationBar="False">
-    <Grid>
+    <Grid x:Name="PageRoot">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0"
                                  EndPoint="1,1">
-                <GradientStop Color="{AppThemeBinding Light=#F8EFE3, Dark=#171210}"
+                <GradientStop x:Name="BackgroundStart"
+                              Color="{AppThemeBinding Light=#F8EFE3, Dark=#171210}"
                               Offset="0" />
-                <GradientStop Color="{AppThemeBinding Light=#F3DEC8, Dark=#241712}"
+                <GradientStop x:Name="BackgroundMid"
+                              Color="{AppThemeBinding Light=#F3DEC8, Dark=#241712}"
                               Offset="0.62" />
-                <GradientStop Color="{AppThemeBinding Light=#E8C7A9, Dark=#120D0B}"
+                <GradientStop x:Name="BackgroundEnd"
+                              Color="{AppThemeBinding Light=#E8C7A9, Dark=#120D0B}"
                               Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
@@ -22,8 +25,8 @@
         <ScrollView>
             <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
                   RowDefinitions="Auto,Auto,Auto,Auto"
-                  RowSpacing="20"
-                  MaximumWidthRequest="760"
+                  RowSpacing="14"
+                  MaximumWidthRequest="720"
                   HorizontalOptions="Center"
                   VerticalOptions="Center">
                 <Grid ColumnDefinitions="*,Auto"
@@ -54,8 +57,9 @@
                     </Border>
                 </Grid>
 
-                <Border Grid.Row="1"
-                        Padding="{OnIdiom Phone='24,26', Desktop='34,30'}"
+                <Border x:Name="TimerCard"
+                        Grid.Row="1"
+                        Padding="{OnIdiom Phone='22,20', Desktop='30,24'}"
                         StrokeThickness="1"
                         Stroke="{AppThemeBinding Light=#E8D1B8, Dark=#4A352C}">
                     <Border.StrokeShape>
@@ -63,9 +67,9 @@
                     </Border.StrokeShape>
                     <Border.Shadow>
                         <Shadow Brush="#3A1A0C"
-                                Offset="0,18"
-                                Radius="34"
-                                Opacity="0.20" />
+                                Offset="0,16"
+                                Radius="30"
+                                Opacity="0.24" />
                     </Border.Shadow>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0"
@@ -78,24 +82,26 @@
                     </Border.Background>
 
                     <Grid RowDefinitions="Auto,Auto,Auto"
-                          RowSpacing="18">
-                        <VerticalStackLayout Spacing="4"
+                          RowSpacing="10">
+                        <VerticalStackLayout Spacing="2"
                                              HorizontalOptions="Center">
                             <Label Text="{Binding TimeDisplay}"
-                                   FontSize="{OnIdiom Phone=70, Desktop=92}"
+                                   FontSize="{OnIdiom Phone=68, Desktop=86}"
                                    FontAttributes="Bold"
                                    HorizontalTextAlignment="Center"
                                    LineBreakMode="NoWrap" />
-                            <Label Text="{Binding StatusText}"
-                                   FontSize="14"
+                            <Label x:Name="QuoteLabel"
+                                   Margin="0,4,0,0"
+                                   FontSize="15"
+                                   FontAttributes="Italic"
                                    HorizontalTextAlignment="Center"
                                    Style="{StaticResource SecondaryLabel}" />
                         </VerticalStackLayout>
 
                         <ProgressBar Grid.Row="1"
                                      Progress="{Binding Progress}"
-                                     HeightRequest="9"
-                                     WidthRequest="{OnIdiom Phone=260, Desktop=430}"
+                                     HeightRequest="8"
+                                     WidthRequest="{OnIdiom Phone=250, Desktop=390}"
                                      HorizontalOptions="Center"
                                      ProgressColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
 
@@ -113,7 +119,7 @@
                     <Border Padding="18"
                             StrokeThickness="1"
                             Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource PanelLight}, Dark={StaticResource PanelDark}}">
+                            BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
@@ -141,7 +147,7 @@
                             Padding="18"
                             StrokeThickness="1"
                             Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource PanelLight}, Dark={StaticResource PanelDark}}">
+                            BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
@@ -169,13 +175,16 @@
                 <Grid Grid.Row="3"
                       ColumnDefinitions="1.2*,*,*"
                       ColumnSpacing="12">
-                    <Button Text="{Binding StartButtonText}"
+                    <Button x:Name="StartButton"
+                            Text="{Binding StartButtonText}"
                             Command="{Binding StartCommand}" />
-                    <Button Grid.Column="1"
+                    <Button x:Name="PauseButton"
+                            Grid.Column="1"
                             Text="Pause"
                             Command="{Binding PauseCommand}"
                             Style="{StaticResource SecondaryButton}" />
-                    <Button Grid.Column="2"
+                    <Button x:Name="ResetButton"
+                            Grid.Column="2"
                             Text="Reset"
                             Command="{Binding ResetCommand}"
                             Style="{StaticResource SecondaryButton}" />

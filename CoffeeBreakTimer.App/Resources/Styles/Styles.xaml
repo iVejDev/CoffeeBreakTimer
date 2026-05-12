@@ -27,6 +27,7 @@
         <Setter Property="CornerRadius" Value="18" />
         <Setter Property="Padding" Value="22,14" />
         <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="Scale" Value="1" />
         <Setter Property="BackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
         <Setter Property="TextColor"
@@ -42,8 +43,9 @@
     </Style>
 
     <Style x:Key="SecondaryButton" TargetType="Button">
+        <Setter Property="Scale" Value="1" />
         <Setter Property="BackgroundColor"
-                Value="{AppThemeBinding Light=#F2DECA, Dark=#3A2B25}" />
+                Value="{AppThemeBinding Light=#F4E1CF, Dark=#3A2B25}" />
         <Setter Property="TextColor"
                 Value="{AppThemeBinding Light=#4E3427, Dark=#F8EBDD}" />
         <Setter Property="Shadow">
