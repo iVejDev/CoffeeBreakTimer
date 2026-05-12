@@ -1,46 +1,41 @@
-﻿using CoffeeBreakTimer.Core.Interfaces;
+using CoffeeBreakTimer.Core.Interfaces;
 
 namespace CoffeeBreakTimer.App.Services;
 
-public class MauiTimerService : ITimerService
+public sealed class MauiTimerService : ITimerService
 {
     private IDispatcherTimer? _timer;
-    private TimeSpan _remaining;
 
-    public event Action<TimeSpan>? Tick;
-    public event Action? Completed;
+    public bool IsRunning => _timer?.IsRunning == true;
 
-    public void Start(TimeSpan duration)
+    public event EventHandler? Tick;
+
+    public void Start(TimeSpan interval)
     {
-        _remaining = duration;
+        Stop();
 
-        _timer = Application.Current!.Dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromSeconds(1);
+        _timer = Application.Current?.Dispatcher.CreateTimer()
+            ?? throw new InvalidOperationException("The MAUI dispatcher is not available.");
+
+        _timer.Interval = interval;
         _timer.Tick += OnTick;
         _timer.Start();
     }
 
-    public void Pause()
-    {
-        _timer?.Stop();
-    }
-
     public void Stop()
     {
-        _timer?.Stop();
-        _remaining = TimeSpan.Zero;
+        if (_timer is null)
+        {
+            return;
+        }
+
+        _timer.Tick -= OnTick;
+        _timer.Stop();
+        _timer = null;
     }
 
     private void OnTick(object? sender, EventArgs e)
     {
-        _remaining -= TimeSpan.FromSeconds(1);
-
-        Tick?.Invoke(_remaining);
-
-        if (_remaining <= TimeSpan.Zero)
-        {
-            _timer?.Stop();
-            Completed?.Invoke();
-        }
+        Tick?.Invoke(this, EventArgs.Empty);
     }
 }

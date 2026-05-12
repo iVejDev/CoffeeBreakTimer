@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Color x:Key="AppBackgroundLight">#F7EFE5</Color>
+    <Color x:Key="AppBackgroundDark">#171210</Color>
+    <Color x:Key="SurfaceLight">#FFF8EF</Color>
+    <Color x:Key="SurfaceDark">#241B18</Color>
+    <Color x:Key="PanelLight">#FFF3E4</Color>
+    <Color x:Key="PanelDark">#2E231E</Color>
+    <Color x:Key="PanelStrokeLight">#EAD6BF</Color>
+    <Color x:Key="PanelStrokeDark">#45342C</Color>
+    <Color x:Key="TextPrimaryLight">#33231B</Color>
+    <Color x:Key="TextPrimaryDark">#F8EBDD</Color>
+    <Color x:Key="TextSecondaryLight">#8C6F5B</Color>
+    <Color x:Key="TextSecondaryDark">#C7AA94</Color>
+    <Color x:Key="Accent">#9B5E32</Color>
+    <Color x:Key="AccentDark">#D39A68</Color>
+    <Color x:Key="Coffee">#6F3E22</Color>
+    <Color x:Key="CoffeeCream">#C98950</Color>
+    <Color x:Key="BreakBlue">#77AFC0</Color>
+    <Color x:Key="Cream">#FFE7C7</Color>
+    <Color x:Key="Steam">#F9E8D3</Color>
+</ResourceDictionary>

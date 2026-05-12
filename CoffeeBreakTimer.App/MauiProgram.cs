@@ -1,11 +1,8 @@
-﻿using CoffeeBreakTimer.App.DI;
+using CoffeeBreakTimer.App.DI;
+using Microsoft.Extensions.Logging;
 
 namespace CoffeeBreakTimer.App;
 
-/*
- * This static class is responsible for creating and configuring the MAUI application.
- * It sets up the application builder and integrates service registrations.
- */
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
@@ -13,9 +10,16 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
 
         builder
-            .UseMauiApp<App>();
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+            });
 
         builder.ConfigureServices();
+
+#if DEBUG
+        builder.Logging.AddDebug();
+#endif
 
         return builder.Build();
     }

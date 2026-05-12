@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CoffeeBreakTimer.App.Controls"
+             xmlns:viewModels="clr-namespace:CoffeeBreakTimer.App.ViewModels"
+             x:Class="CoffeeBreakTimer.App.Views.MainPage"
+             x:DataType="viewModels:MainViewModel"
+             NavigationPage.HasNavigationBar="False">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="1,1">
+                <GradientStop Color="{AppThemeBinding Light=#F8EFE3, Dark=#171210}"
+                              Offset="0" />
+                <GradientStop Color="{AppThemeBinding Light=#F3DEC8, Dark=#241712}"
+                              Offset="0.62" />
+                <GradientStop Color="{AppThemeBinding Light=#E8C7A9, Dark=#120D0B}"
+                              Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <ScrollView>
+            <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
+                  RowDefinitions="Auto,Auto,Auto,Auto"
+                  RowSpacing="20"
+                  MaximumWidthRequest="760"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Center">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="CoffeeBreakerTimer"
+                               FontSize="{OnIdiom Phone=26, Desktop=32}"
+                               FontAttributes="Bold"
+                               LineBreakMode="NoWrap" />
+                        <Label Text="{Binding StatusText}"
+                               FontSize="15"
+                               Style="{StaticResource SecondaryLabel}" />
+                    </VerticalStackLayout>
+
+                    <Border Grid.Column="1"
+                            Padding="14,8"
+                            VerticalOptions="Center"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light=#E6CDB4, Dark=#4B372F}"
+                            BackgroundColor="{AppThemeBinding Light=#FFF5E8, Dark=#2A1F1B}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding SessionTitle}"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
+                    </Border>
+                </Grid>
+
+                <Border Grid.Row="1"
+                        Padding="{OnIdiom Phone='24,26', Desktop='34,30'}"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#E8D1B8, Dark=#4A352C}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="#3A1A0C"
+                                Offset="0,18"
+                                Radius="34"
+                                Opacity="0.20" />
+                    </Border.Shadow>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="{AppThemeBinding Light=#FFF8EF, Dark=#2A201C}"
+                                          Offset="0" />
+                            <GradientStop Color="{AppThemeBinding Light=#F7E4CF, Dark=#1F1714}"
+                                          Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Grid RowDefinitions="Auto,Auto,Auto"
+                          RowSpacing="18">
+                        <VerticalStackLayout Spacing="4"
+                                             HorizontalOptions="Center">
+                            <Label Text="{Binding TimeDisplay}"
+                                   FontSize="{OnIdiom Phone=70, Desktop=92}"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   LineBreakMode="NoWrap" />
+                            <Label Text="{Binding StatusText}"
+                                   FontSize="14"
+                                   HorizontalTextAlignment="Center"
+                                   Style="{StaticResource SecondaryLabel}" />
+                        </VerticalStackLayout>
+
+                        <ProgressBar Grid.Row="1"
+                                     Progress="{Binding Progress}"
+                                     HeightRequest="9"
+                                     WidthRequest="{OnIdiom Phone=260, Desktop=430}"
+                                     HorizontalOptions="Center"
+                                     ProgressColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
+
+                        <controls:CoffeeMugView Grid.Row="2"
+                                                CoffeeLevel="{Binding CoffeeLevel}"
+                                                SessionType="{Binding SessionType}"
+                                                RunState="{Binding RunState}"
+                                                HorizontalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="2"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="14">
+                    <Border Padding="18"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource PanelLight}, Dark={StaticResource PanelDark}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#241006"
+                                    Offset="0,10"
+                                    Radius="20"
+                                    Opacity="0.16" />
+                        </Border.Shadow>
+                        <Grid RowDefinitions="Auto,Auto,Auto"
+                              RowSpacing="10">
+                            <Label Text="Focus duration"
+                                   Style="{StaticResource EyebrowLabel}" />
+                            <Label Grid.Row="1"
+                                   Text="{Binding WorkMinutesDisplay}"
+                                   FontSize="20"
+                                   FontAttributes="Bold" />
+                            <Stepper Grid.Row="2"
+                                     Value="{Binding WorkMinutes, Mode=TwoWay}"
+                                     IsEnabled="{Binding IsDurationEditingEnabled}" />
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Padding="18"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource PanelLight}, Dark={StaticResource PanelDark}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#241006"
+                                    Offset="0,10"
+                                    Radius="20"
+                                    Opacity="0.16" />
+                        </Border.Shadow>
+                        <Grid RowDefinitions="Auto,Auto,Auto"
+                              RowSpacing="10">
+                            <Label Text="Break duration"
+                                   Style="{StaticResource EyebrowLabel}" />
+                            <Label Grid.Row="1"
+                                   Text="{Binding BreakMinutesDisplay}"
+                                   FontSize="20"
+                                   FontAttributes="Bold" />
+                            <Stepper Grid.Row="2"
+                                     Value="{Binding BreakMinutes, Mode=TwoWay}"
+                                     IsEnabled="{Binding IsDurationEditingEnabled}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="3"
+                      ColumnDefinitions="1.2*,*,*"
+                      ColumnSpacing="12">
+                    <Button Text="{Binding StartButtonText}"
+                            Command="{Binding StartCommand}" />
+                    <Button Grid.Column="1"
+                            Text="Pause"
+                            Command="{Binding PauseCommand}"
+                            Style="{StaticResource SecondaryButton}" />
+                    <Button Grid.Column="2"
+                            Text="Reset"
+                            Command="{Binding ResetCommand}"
+                            Style="{StaticResource SecondaryButton}" />
+                </Grid>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>

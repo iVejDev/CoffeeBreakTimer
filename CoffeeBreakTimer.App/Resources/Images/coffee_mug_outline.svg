@@ -1,0 +1,31 @@
+<svg width="420" height="360" viewBox="0 0 420 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ceramic" x1="116" y1="95" x2="295" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4E2"/>
+      <stop offset="0.5" stop-color="#F2D2AE"/>
+      <stop offset="1" stop-color="#D6A579"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="130" y1="91" x2="279" y2="139" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9EF"/>
+      <stop offset="1" stop-color="#E7BE93"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(162 142) rotate(55) scale(112 42)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.65"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="46" y="70" width="318" height="248" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#2A130A" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+  <ellipse cx="202" cy="302" rx="132" ry="24" fill="#2A1710" fill-opacity="0.20"/>
+  <g filter="url(#softShadow)">
+    <path d="M286 142H318C349.48 142 375 167.52 375 199C375 230.48 349.48 256 318 256H286V225H316C330.36 225 342 213.36 342 199C342 184.64 330.36 173 316 173H286V142Z" fill="url(#ceramic)"/>
+    <path d="M285 143H317C347.93 143 373 168.07 373 199C373 229.93 347.93 255 317 255H285" stroke="#F8DEC2" stroke-width="10" stroke-linecap="round"/>
+    <path d="M101 124C101 105.222 116.222 90 135 90H273C291.778 90 307 105.222 307 124V224C307 265.421 273.421 299 232 299H176C134.579 299 101 265.421 101 224V124Z" fill="url(#ceramic)"/>
+    <ellipse cx="204" cy="124" rx="104" ry="42" fill="url(#rim)"/>
+    <ellipse cx="204" cy="124" rx="82" ry="25" fill="#8A4D2B" fill-opacity="0.30"/>
+    <path d="M123 138C140 154 268 154 286 138V221C286 252.48 260.48 278 229 278H179C147.52 278 122 252.48 122 221L123 138Z" fill="url(#shine)"/>
+    <path d="M137 106C127.059 106 119 114.059 119 124V217C119 249.033 144.967 275 177 275" stroke="#FFF8EF" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+    <path d="M101 124C101 105.222 116.222 90 135 90H273C291.778 90 307 105.222 307 124V224C307 265.421 273.421 299 232 299H176C134.579 299 101 265.421 101 224V124Z" stroke="#E7BE93" stroke-width="6"/>
+  </g>
+</svg>
