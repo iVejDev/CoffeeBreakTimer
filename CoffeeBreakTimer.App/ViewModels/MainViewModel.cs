@@ -4,6 +4,7 @@ using CoffeeBreakTimer.Core.Interfaces;
 using CoffeeBreakTimer.Core.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 
 namespace CoffeeBreakTimer.App.ViewModels;
 
@@ -12,6 +13,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly CoffeeTimerService _timerService;
     private readonly ISettingsRepository _settingsRepository;
     private readonly IAmbiencePlayer _ambiencePlayer;
+    private readonly ITaskRepository _taskRepository;
     private readonly CancellationTokenSource _quoteRotationTokenSource = new();
     private bool _isLoadingSettings;
     private bool _isUpdatingDurationText;
@@ -93,19 +95,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private WorkspaceSection selectedWorkspaceSection = WorkspaceSection.Focus;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddTaskCommand))]
+    private string newTaskTitle = string.Empty;
+
+    [ObservableProperty]
+    private string newTaskEstimatedSessionsText = string.Empty;
+
     public MainViewModel(
         CoffeeTimerService timerService,
         ISettingsRepository settingsRepository,
-        IAmbiencePlayer ambiencePlayer)
+        IAmbiencePlayer ambiencePlayer,
+        ITaskRepository taskRepository)
     {
         _timerService = timerService;
         _settingsRepository = settingsRepository;
         _ambiencePlayer = ambiencePlayer;
+        _taskRepository = taskRepository;
 
         _timerService.StateChanged += OnTimerStateChanged;
         _ambiencePlayer.SetVolume(AmbienceVolume);
         LoadSettings();
         ApplySnapshot(_timerService.CurrentSnapshot);
+        _ = LoadTasksAsync();
         _ = RotateQuotesAsync(_quoteRotationTokenSource.Token);
     }
 
@@ -135,6 +147,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public bool CanReset => RunState != TimerRunState.Ready || SessionType != SessionType.Work || CoffeeLevel < 1.0;
 
     public string AmbienceVolumeDisplay => $"{Math.Round(AmbienceVolume * 100):0}%";
+
+    public ObservableCollection<FocusTaskItemViewModel> Tasks { get; } = [];
+
+    public bool HasTasks => Tasks.Count > 0;
+
+    public bool HasNoTasks => !HasTasks;
+
+    public bool CanAddTask => !string.IsNullOrWhiteSpace(NewTaskTitle);
 
     [RelayCommand(CanExecute = nameof(CanStart))]
     private void Start()
@@ -170,6 +190,48 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             SelectedWorkspaceSection = selectedSection;
         }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanAddTask))]
+    private async Task AddTaskAsync()
+    {
+        int? estimatedSessions = null;
+
+        if (int.TryParse(NewTaskEstimatedSessionsText, out var parsedEstimate))
+        {
+            estimatedSessions = parsedEstimate;
+        }
+
+        FocusTask task;
+
+        try
+        {
+            task = FocusTask.Create(NewTaskTitle, estimatedSessions);
+        }
+        catch (ArgumentException)
+        {
+            return;
+        }
+
+        Tasks.Insert(0, CreateTaskItem(task));
+        NewTaskTitle = string.Empty;
+        NewTaskEstimatedSessionsText = string.Empty;
+        RefreshTaskState();
+        await SaveTasksAsync();
+    }
+
+    private async Task ToggleTaskAsync(FocusTaskItemViewModel task)
+    {
+        task.IsCompleted = !task.IsCompleted;
+        RefreshTaskState();
+        await SaveTasksAsync();
+    }
+
+    private async Task DeleteTaskAsync(FocusTaskItemViewModel task)
+    {
+        Tasks.Remove(task);
+        RefreshTaskState();
+        await SaveTasksAsync();
     }
 
     public void Dispose()
@@ -301,6 +363,40 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(CanStart));
         OnPropertyChanged(nameof(CanPause));
         OnPropertyChanged(nameof(CanReset));
+    }
+
+    private async Task LoadTasksAsync()
+    {
+        var tasks = await _taskRepository.LoadAsync();
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            Tasks.Clear();
+
+            foreach (var task in tasks)
+            {
+                Tasks.Add(CreateTaskItem(task));
+            }
+
+            RefreshTaskState();
+        });
+    }
+
+    private async Task SaveTasksAsync()
+    {
+        var tasks = Tasks.Select(task => task.ToModel()).ToList();
+        await _taskRepository.SaveAsync(tasks);
+    }
+
+    private FocusTaskItemViewModel CreateTaskItem(FocusTask task)
+    {
+        return new FocusTaskItemViewModel(task, ToggleTaskAsync, DeleteTaskAsync);
+    }
+
+    private void RefreshTaskState()
+    {
+        OnPropertyChanged(nameof(HasTasks));
+        OnPropertyChanged(nameof(HasNoTasks));
     }
 
     private static string FormatTime(TimeSpan time)

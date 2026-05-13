@@ -95,15 +95,26 @@ public partial class MainPage : ContentPage
 
         if (section == WorkspaceSection.Focus)
         {
+            TasksWorkspace.IsVisible = false;
             PlaceholderWorkspace.IsVisible = false;
             FocusWorkspace.IsVisible = true;
             await FocusWorkspace.FadeTo(1, 180, Easing.CubicOut);
             return;
         }
 
+        if (section == WorkspaceSection.Tasks)
+        {
+            await FocusWorkspace.FadeTo(0, 140, Easing.CubicOut);
+            FocusWorkspace.IsVisible = false;
+            PlaceholderWorkspace.IsVisible = false;
+            TasksWorkspace.Opacity = 0;
+            TasksWorkspace.IsVisible = true;
+            await TasksWorkspace.FadeTo(1, 180, Easing.CubicIn);
+            return;
+        }
+
         PlaceholderTitle.Text = section switch
         {
-            WorkspaceSection.Tasks => "Tasks",
             WorkspaceSection.Statistics => "Statistics",
             WorkspaceSection.Settings => "Settings",
             _ => "Focus"
@@ -112,6 +123,7 @@ public partial class MainPage : ContentPage
 
         await FocusWorkspace.FadeTo(0, 140, Easing.CubicOut);
         FocusWorkspace.IsVisible = false;
+        TasksWorkspace.IsVisible = false;
         PlaceholderWorkspace.Opacity = 0;
         PlaceholderWorkspace.IsVisible = true;
         await PlaceholderWorkspace.FadeTo(1, 180, Easing.CubicIn);
