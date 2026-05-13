@@ -26,7 +26,7 @@ public partial class CoffeeMugView : ContentView
         propertyChanged: OnVisualStateChanged);
 
     private CancellationTokenSource? _animationTokenSource;
-    private SessionType _previousSessionType = SessionType.Work;
+    private TimerRunState _previousRunState = TimerRunState.Ready;
 
     public CoffeeMugView()
     {
@@ -61,7 +61,7 @@ public partial class CoffeeMugView : ContentView
         var view = (CoffeeMugView)bindable;
         view.UpdateLiquid(true);
         view.UpdateAmbientState();
-        view.DetectSessionTransition();
+        view.DetectSessionCompletion();
     }
 
     private void OnLoaded(object? sender, EventArgs e)
@@ -176,7 +176,7 @@ public partial class CoffeeMugView : ContentView
             await Task.WhenAll(
                 steam.TranslateTo(0, -18, 2600, Easing.SinOut),
                 steam.ScaleTo(1.08, 2600, Easing.SinInOut),
-                steam.FadeTo(Math.Max(0.03, GetSteamOpacity() * 0.18), 2600, Easing.CubicOut));
+                steam.FadeTo(GetSteamOpacity() * 0.18, 2600, Easing.CubicOut));
 
             await Task.Delay(120, token);
         }
@@ -240,38 +240,49 @@ public partial class CoffeeMugView : ContentView
 
     private double GetSteamOpacity()
     {
+        var levelIntensity = Math.Clamp(CoffeeLevel, 0.0, 1.0);
+        if (levelIntensity <= 0.01)
+        {
+            return 0;
+        }
+
         if (!IsActive)
         {
-            return 0.16;
+            return levelIntensity * 0.18;
         }
 
-        var levelIntensity = Math.Clamp(CoffeeLevel, 0.0, 1.0);
-        return 0.10 + (levelIntensity * 0.84);
+        return levelIntensity * 0.94;
     }
 
-    private void DetectSessionTransition()
+    private void DetectSessionCompletion()
     {
-        if (_previousSessionType == SessionType.Work && SessionType == SessionType.Break)
+        if (_previousRunState == TimerRunState.Running && RunState == TimerRunState.Completed)
         {
-            _ = RunFocusFinishedAttentionAsync();
+            _ = RunSessionFinishedAttentionAsync();
         }
 
-        _previousSessionType = SessionType;
+        _previousRunState = RunState;
     }
 
-    private async Task RunFocusFinishedAttentionAsync()
+    private async Task RunSessionFinishedAttentionAsync()
     {
-        MugStage.AbortAnimation("FocusFinishedPulse");
-        MugStage.AbortAnimation("FocusFinishedShake");
+        MugStage.AbortAnimation("SessionFinishedPulse");
+        MugStage.AbortAnimation("SessionFinishedShake");
 
-        for (var i = 0; i < 3; i++)
+        var finishAt = DateTimeOffset.UtcNow.AddSeconds(3);
+
+        while (DateTimeOffset.UtcNow < finishAt)
         {
-            await MugStage.ScaleTo(1.045, 140, Easing.CubicOut);
-            await MugStage.TranslateTo(-5, 0, 60, Easing.CubicOut);
-            await MugStage.TranslateTo(5, 0, 80, Easing.CubicInOut);
-            await MugStage.TranslateTo(0, 0, 70, Easing.CubicOut);
-            await MugStage.ScaleTo(1, 180, Easing.CubicInOut);
-            await Task.Delay(120);
+            await MugStage.ScaleTo(1.045, 120, Easing.CubicOut);
+            await MugStage.TranslateTo(-5, 0, 55, Easing.CubicOut);
+            await MugStage.TranslateTo(5, 0, 70, Easing.CubicInOut);
+            await MugStage.TranslateTo(0, 0, 65, Easing.CubicOut);
+            await MugStage.ScaleTo(1, 150, Easing.CubicInOut);
+            await Task.Delay(80);
         }
+
+        await Task.WhenAll(
+            MugStage.ScaleTo(1, 120, Easing.CubicOut),
+            MugStage.TranslateTo(0, 0, 120, Easing.CubicOut));
     }
 }

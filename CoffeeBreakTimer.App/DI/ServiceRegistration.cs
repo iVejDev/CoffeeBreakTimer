@@ -12,6 +12,7 @@ public static class ServiceRegistration
     {
         builder.Services.AddSingleton<ITimerService, MauiTimerService>();
         builder.Services.AddSingleton<IAudioPlayer, MauiAudioPlayer>();
+        builder.Services.AddSingleton<IAmbiencePlayer, MauiAmbiencePlayer>();
         builder.Services.AddSingleton<ISettingsRepository, PreferencesSettingsRepository>();
         builder.Services.AddSingleton<CoffeeTimerService>();
 

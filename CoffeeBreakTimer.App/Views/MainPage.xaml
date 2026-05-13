@@ -24,7 +24,7 @@
 
         <ScrollView>
             <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                  RowDefinitions="Auto,Auto,Auto,Auto"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                   RowSpacing="14"
                   MaximumWidthRequest="720"
                   HorizontalOptions="Center"
@@ -172,7 +172,76 @@
                     </Border>
                 </Grid>
 
-                <Grid Grid.Row="3"
+                <Border Grid.Row="3"
+                        Padding="{OnIdiom Phone='16,14', Desktop='18,15'}"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                        BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="#241006"
+                                Offset="0,8"
+                                Radius="18"
+                                Opacity="0.14" />
+                    </Border.Shadow>
+
+                    <Grid ColumnDefinitions="{OnIdiom Phone='*,*', Desktop='Auto,Auto,Auto,*'}"
+                          RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
+                          ColumnSpacing="{OnIdiom Phone=16, Desktop=24}"
+                          RowSpacing="12"
+                          VerticalOptions="Center">
+                        <Label Text="Ambience"
+                               Style="{StaticResource EyebrowLabel}"
+                               VerticalOptions="Center" />
+
+                        <HorizontalStackLayout Grid.Column="{OnIdiom Phone=1, Desktop=1}"
+                                               Spacing="8"
+                                               HorizontalOptions="{OnIdiom Phone=End, Desktop=Start}"
+                                               VerticalOptions="Center">
+                            <Label Text="Rain"
+                                   FontSize="13"
+                                   Style="{StaticResource SecondaryLabel}"
+                                   VerticalOptions="Center" />
+                            <Switch IsToggled="{Binding IsRainAmbienceEnabled}" />
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                               Grid.Column="{OnIdiom Phone=0, Desktop=2}"
+                                               Spacing="8"
+                                               VerticalOptions="Center">
+                            <Label Text="Chill"
+                                   FontSize="13"
+                                   Style="{StaticResource SecondaryLabel}"
+                                   VerticalOptions="Center" />
+                            <Switch IsToggled="{Binding IsChillAmbienceEnabled}" />
+                        </HorizontalStackLayout>
+
+                        <Grid Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                              Grid.Column="{OnIdiom Phone=1, Desktop=3}"
+                              ColumnDefinitions="*,Auto"
+                              ColumnSpacing="10"
+                              VerticalOptions="Center">
+                            <Slider Minimum="0"
+                                    Maximum="1"
+                                    Value="{Binding AmbienceVolume, Mode=TwoWay}"
+                                    MinimumTrackColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}"
+                                    MaximumTrackColor="{AppThemeBinding Light=#DDC4AA, Dark=#59433A}"
+                                    ThumbColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding AmbienceVolumeDisplay}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   MinimumWidthRequest="36"
+                                   HorizontalTextAlignment="End"
+                                   VerticalOptions="Center"
+                                   Style="{StaticResource SecondaryLabel}" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="4"
                       ColumnDefinitions="1.2*,*,*"
                       ColumnSpacing="12">
                     <Button x:Name="StartButton"

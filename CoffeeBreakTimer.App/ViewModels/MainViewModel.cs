@@ -11,6 +11,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly CoffeeTimerService _timerService;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly IAmbiencePlayer _ambiencePlayer;
     private readonly CancellationTokenSource _quoteRotationTokenSource = new();
     private bool _isLoadingSettings;
     private bool _disposed;
@@ -66,12 +67,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string quoteText = FocusQuotes[0];
 
+    [ObservableProperty]
+    private bool isRainAmbienceEnabled;
+
+    [ObservableProperty]
+    private bool isChillAmbienceEnabled;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AmbienceVolumeDisplay))]
+    private double ambienceVolume = 0.32;
+
     public MainViewModel(
         CoffeeTimerService timerService,
-        ISettingsRepository settingsRepository)
+        ISettingsRepository settingsRepository,
+        IAmbiencePlayer ambiencePlayer)
     {
         _timerService = timerService;
         _settingsRepository = settingsRepository;
+        _ambiencePlayer = ambiencePlayer;
 
         _timerService.StateChanged += OnTimerStateChanged;
         LoadSettings();
@@ -103,6 +116,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public bool CanPause => RunState == TimerRunState.Running;
 
     public bool CanReset => RunState != TimerRunState.Ready || SessionType != SessionType.Work || CoffeeLevel < 1.0;
+
+    public string AmbienceVolumeDisplay => $"{Math.Round(AmbienceVolume * 100):0}%";
 
     [RelayCommand(CanExecute = nameof(CanStart))]
     private void Start()
@@ -139,6 +154,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         _timerService.StateChanged -= OnTimerStateChanged;
+        _ambiencePlayer.StopAll();
         _quoteRotationTokenSource.Cancel();
         _quoteRotationTokenSource.Dispose();
         _disposed = true;
@@ -167,6 +183,21 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnCoffeeLevelChanged(double value)
     {
         RefreshCommandState();
+    }
+
+    partial void OnIsRainAmbienceEnabledChanged(bool value)
+    {
+        _ambiencePlayer.SetEnabled(AmbienceTrack.Rain, value);
+    }
+
+    partial void OnIsChillAmbienceEnabledChanged(bool value)
+    {
+        _ambiencePlayer.SetEnabled(AmbienceTrack.Chill, value);
+    }
+
+    partial void OnAmbienceVolumeChanged(double value)
+    {
+        _ambiencePlayer.SetVolume(value);
     }
 
     private void LoadSettings()

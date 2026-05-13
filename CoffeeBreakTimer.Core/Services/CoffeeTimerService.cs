@@ -141,13 +141,15 @@ public sealed class CoffeeTimerService : IDisposable
         _elapsedBeforePause = CurrentDuration;
         RunState = TimerRunState.Completed;
         PublishSnapshot(CurrentDuration);
+
         if (CurrentSession == SessionType.Work)
         {
-            _audio.Play("session_end");
+            _audio.Play("focus_end");
             StartSession(SessionType.Break, _settings.BreakDuration);
             return;
         }
 
+        _audio.Play("break_end");
         CurrentSession = SessionType.Work;
         CurrentDuration = _settings.WorkDuration;
         _elapsedBeforePause = TimeSpan.Zero;

@@ -7,6 +7,7 @@ namespace CoffeeBreakTimer.App.Views;
 public partial class MainPage : ContentPage
 {
     private readonly MainViewModel _viewModel;
+    private int _quoteTransitionId;
 
     public MainPage(MainViewModel viewModel)
     {
@@ -43,8 +44,16 @@ public partial class MainPage : ContentPage
 
     private async Task FadeQuoteAsync()
     {
+        var transitionId = ++_quoteTransitionId;
+        var nextQuote = _viewModel.QuoteText;
+
         await QuoteLabel.FadeTo(0, 250, Easing.CubicOut);
-        QuoteLabel.Text = _viewModel.QuoteText;
+        if (transitionId != _quoteTransitionId)
+        {
+            return;
+        }
+
+        QuoteLabel.Text = nextQuote;
         await QuoteLabel.FadeTo(1, 250, Easing.CubicIn);
     }
 
@@ -84,13 +93,13 @@ public partial class MainPage : ContentPage
         Color.FromArgb("#171210"),
         Color.FromArgb("#241712"),
         Color.FromArgb("#120D0B"),
-        Color.FromArgb("#D39A68"));
+        Color.FromArgb("#DCA06A"));
 
     private static SessionTheme CreateBreakTheme() => new(
         Color.FromArgb("#101A18"),
         Color.FromArgb("#172922"),
         Color.FromArgb("#0B1219"),
-        Color.FromArgb("#83B69B"));
+        Color.FromArgb("#8DDBB5"));
 
     private static void ConfigureButtonAnimation(Button button)
     {
