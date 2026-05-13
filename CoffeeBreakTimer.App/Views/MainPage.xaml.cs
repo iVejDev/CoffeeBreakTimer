@@ -18,8 +18,13 @@ public partial class MainPage : ContentPage
         ConfigureButtonAnimation(StartButton);
         ConfigureButtonAnimation(PauseButton);
         ConfigureButtonAnimation(ResetButton);
+        ConfigureButtonAnimation(FocusNavButton);
+        ConfigureButtonAnimation(TasksNavButton);
+        ConfigureButtonAnimation(StatisticsNavButton);
+        ConfigureButtonAnimation(SettingsNavButton);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;
         ApplySessionTheme(viewModel.SessionType, false);
+        ApplyWorkspaceSection(viewModel.SelectedWorkspaceSection, false);
     }
 
     protected override void OnDisappearing()
@@ -39,6 +44,12 @@ public partial class MainPage : ContentPage
         if (e.PropertyName == nameof(MainViewModel.QuoteText))
         {
             _ = FadeQuoteAsync();
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainViewModel.SelectedWorkspaceSection))
+        {
+            _ = ApplyWorkspaceSectionAsync(_viewModel.SelectedWorkspaceSection);
         }
     }
 
@@ -76,6 +87,58 @@ public partial class MainPage : ContentPage
         AnimateColor(BackgroundMid.Color, colors.BackgroundMid, color => BackgroundMid.Color = color, 900);
         AnimateColor(BackgroundEnd.Color, colors.BackgroundEnd, color => BackgroundEnd.Color = color, 900);
         AnimateColor(StartButton.BackgroundColor, colors.PrimaryButton, color => StartButton.BackgroundColor = color, 650);
+    }
+
+    private async Task ApplyWorkspaceSectionAsync(WorkspaceSection section)
+    {
+        ApplyWorkspaceSection(section, true);
+
+        if (section == WorkspaceSection.Focus)
+        {
+            PlaceholderWorkspace.IsVisible = false;
+            FocusWorkspace.IsVisible = true;
+            await FocusWorkspace.FadeTo(1, 180, Easing.CubicOut);
+            return;
+        }
+
+        PlaceholderTitle.Text = section switch
+        {
+            WorkspaceSection.Tasks => "Tasks",
+            WorkspaceSection.Statistics => "Statistics",
+            WorkspaceSection.Settings => "Settings",
+            _ => "Focus"
+        };
+        PlaceholderSubtitle.Text = "Coming next";
+
+        await FocusWorkspace.FadeTo(0, 140, Easing.CubicOut);
+        FocusWorkspace.IsVisible = false;
+        PlaceholderWorkspace.Opacity = 0;
+        PlaceholderWorkspace.IsVisible = true;
+        await PlaceholderWorkspace.FadeTo(1, 180, Easing.CubicIn);
+    }
+
+    private void ApplyWorkspaceSection(WorkspaceSection section, bool animate)
+    {
+        UpdateNavButton(FocusNavButton, section == WorkspaceSection.Focus, animate);
+        UpdateNavButton(TasksNavButton, section == WorkspaceSection.Tasks, animate);
+        UpdateNavButton(StatisticsNavButton, section == WorkspaceSection.Statistics, animate);
+        UpdateNavButton(SettingsNavButton, section == WorkspaceSection.Settings, animate);
+    }
+
+    private void UpdateNavButton(Button button, bool isSelected, bool animate)
+    {
+        var targetBackground = isSelected ? Color.FromArgb("#4A332A") : Colors.Transparent;
+        var targetText = isSelected ? Color.FromArgb("#FFE7C7") : Color.FromArgb("#C7AA94");
+
+        if (!animate)
+        {
+            button.BackgroundColor = targetBackground;
+            button.TextColor = targetText;
+            return;
+        }
+
+        AnimateColor(button.BackgroundColor, targetBackground, color => button.BackgroundColor = color, 180);
+        AnimateColor(button.TextColor, targetText, color => button.TextColor = color, 180);
     }
 
     private void AnimateColor(Color from, Color to, Action<Color> update, uint length)

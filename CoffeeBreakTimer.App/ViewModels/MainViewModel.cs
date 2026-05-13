@@ -14,6 +14,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IAmbiencePlayer _ambiencePlayer;
     private readonly CancellationTokenSource _quoteRotationTokenSource = new();
     private bool _isLoadingSettings;
+    private bool _isUpdatingDurationText;
     private bool _disposed;
     private int _quoteIndex;
     private QuoteMode _quoteMode = QuoteMode.Focus;
@@ -61,8 +62,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private double workMinutes = TimerSettings.DefaultWorkMinutes;
 
     [ObservableProperty]
+    private string workHoursText = "0";
+
+    [ObservableProperty]
+    private string workRemainingMinutesText = TimerSettings.DefaultWorkMinutes.ToString();
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(BreakMinutesDisplay))]
     private double breakMinutes = TimerSettings.DefaultBreakMinutes;
+
+    [ObservableProperty]
+    private string breakHoursText = "0";
+
+    [ObservableProperty]
+    private string breakRemainingMinutesText = TimerSettings.DefaultBreakMinutes.ToString();
 
     [ObservableProperty]
     private string quoteText = FocusQuotes[0];
@@ -75,7 +88,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AmbienceVolumeDisplay))]
-    private double ambienceVolume = 0.32;
+    private double ambienceVolume = 0.55;
+
+    [ObservableProperty]
+    private WorkspaceSection selectedWorkspaceSection = WorkspaceSection.Focus;
 
     public MainViewModel(
         CoffeeTimerService timerService,
@@ -87,6 +103,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _ambiencePlayer = ambiencePlayer;
 
         _timerService.StateChanged += OnTimerStateChanged;
+        _ambiencePlayer.SetVolume(AmbienceVolume);
         LoadSettings();
         ApplySnapshot(_timerService.CurrentSnapshot);
         _ = RotateQuotesAsync(_quoteRotationTokenSource.Token);
@@ -146,6 +163,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _timerService.Reset();
     }
 
+    [RelayCommand]
+    private void SelectWorkspaceSection(string section)
+    {
+        if (Enum.TryParse<WorkspaceSection>(section, ignoreCase: true, out var selectedSection))
+        {
+            SelectedWorkspaceSection = selectedSection;
+        }
+    }
+
     public void Dispose()
     {
         if (_disposed)
@@ -162,12 +188,34 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnWorkMinutesChanged(double value)
     {
+        UpdateDurationParts(value, isWorkDuration: true);
         PersistSettings();
     }
 
     partial void OnBreakMinutesChanged(double value)
     {
+        UpdateDurationParts(value, isWorkDuration: false);
         PersistSettings();
+    }
+
+    partial void OnWorkHoursTextChanged(string value)
+    {
+        ApplyTypedDurationParts(value, WorkRemainingMinutesText, minutes => WorkMinutes = minutes);
+    }
+
+    partial void OnWorkRemainingMinutesTextChanged(string value)
+    {
+        ApplyTypedDurationParts(WorkHoursText, value, minutes => WorkMinutes = minutes);
+    }
+
+    partial void OnBreakHoursTextChanged(string value)
+    {
+        ApplyTypedDurationParts(value, BreakRemainingMinutesText, minutes => BreakMinutes = minutes);
+    }
+
+    partial void OnBreakRemainingMinutesTextChanged(string value)
+    {
+        ApplyTypedDurationParts(BreakHoursText, value, minutes => BreakMinutes = minutes);
     }
 
     partial void OnRunStateChanged(TimerRunState value)
@@ -261,6 +309,61 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return $"{totalMinutes:00}:{time.Seconds:00}";
     }
 
+    private void ApplyTypedDurationParts(string hoursText, string minutesText, Action<double> update)
+    {
+        if (_isUpdatingDurationText)
+        {
+            return;
+        }
+
+        var hours = ParseDurationPart(hoursText);
+        var minutes = ParseDurationPart(minutesText);
+
+        if (hours is null && minutes is null)
+        {
+            return;
+        }
+
+        update(NormalizeMinutes(((hours ?? 0) * 60) + (minutes ?? 0)));
+    }
+
+    private void UpdateDurationParts(double totalMinutes, bool isWorkDuration)
+    {
+        var normalizedMinutes = (int)NormalizeMinutes(totalMinutes);
+        var hours = normalizedMinutes / 60;
+        var minutes = normalizedMinutes % 60;
+
+        _isUpdatingDurationText = true;
+
+        if (isWorkDuration)
+        {
+            WorkHoursText = hours.ToString();
+            WorkRemainingMinutesText = minutes.ToString();
+        }
+        else
+        {
+            BreakHoursText = hours.ToString();
+            BreakRemainingMinutesText = minutes.ToString();
+        }
+
+        _isUpdatingDurationText = false;
+    }
+
+    private static int? ParseDurationPart(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return int.TryParse(value, out var parsed) ? Math.Max(0, parsed) : null;
+    }
+
+    private static double NormalizeMinutes(double minutes)
+    {
+        return Math.Clamp(Math.Round(minutes), 1, 240);
+    }
+
     private async Task RotateQuotesAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
@@ -304,4 +407,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Focus,
         Rest
     }
+}
+
+public enum WorkspaceSection
+{
+    Focus,
+    Tasks,
+    Statistics,
+    Settings
 }

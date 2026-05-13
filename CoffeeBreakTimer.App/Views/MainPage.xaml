@@ -22,7 +22,56 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <ScrollView>
+        <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='Auto,*'}"
+              ColumnSpacing="{OnIdiom Phone=0, Desktop=18}"
+              Padding="{OnIdiom Phone='0', Desktop='18,18,18,18'}">
+            <Border x:Name="Sidebar"
+                    WidthRequest="{OnIdiom Phone=0, Desktop=150}"
+                    IsVisible="{OnIdiom Phone=False, Desktop=True}"
+                    Padding="12"
+                    StrokeThickness="1"
+                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                    BackgroundColor="{AppThemeBinding Light=#CFFFF7EC, Dark=#8F2D231F}"
+                    VerticalOptions="Fill">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#241006"
+                            Offset="0,10"
+                            Radius="22"
+                            Opacity="0.16" />
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Workspace"
+                           Margin="4,2,0,8"
+                           Style="{StaticResource EyebrowLabel}" />
+                    <Button x:Name="FocusNavButton"
+                            Text="☕  Focus"
+                            Command="{Binding SelectWorkspaceSectionCommand}"
+                            CommandParameter="Focus"
+                            Style="{StaticResource SidebarNavButton}" />
+                    <Button x:Name="TasksNavButton"
+                            Text="✓  Tasks"
+                            Command="{Binding SelectWorkspaceSectionCommand}"
+                            CommandParameter="Tasks"
+                            Style="{StaticResource SidebarNavButton}" />
+                    <Button x:Name="StatisticsNavButton"
+                            Text="📊  Statistics"
+                            Command="{Binding SelectWorkspaceSectionCommand}"
+                            CommandParameter="Statistics"
+                            Style="{StaticResource SidebarNavButton}" />
+                    <Button x:Name="SettingsNavButton"
+                            Text="⚙  Settings"
+                            Command="{Binding SelectWorkspaceSectionCommand}"
+                            CommandParameter="Settings"
+                            Style="{StaticResource SidebarNavButton}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Grid Grid.Column="{OnIdiom Phone=0, Desktop=1}">
+                <ScrollView x:Name="FocusWorkspace">
             <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
                   RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                   RowSpacing="14"
@@ -133,13 +182,33 @@
                               RowSpacing="10">
                             <Label Text="Focus duration"
                                    Style="{StaticResource EyebrowLabel}" />
-                            <Label Grid.Row="1"
-                                   Text="{Binding WorkMinutesDisplay}"
-                                   FontSize="20"
-                                   FontAttributes="Bold" />
-                            <Stepper Grid.Row="2"
-                                     Value="{Binding WorkMinutes, Mode=TwoWay}"
-                                     IsEnabled="{Binding IsDurationEditingEnabled}" />
+                            <Grid Grid.Row="1"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="14">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="6">
+                                    <Entry Text="{Binding WorkHoursText, Mode=TwoWay}"
+                                           IsEnabled="{Binding IsDurationEditingEnabled}"
+                                           Style="{StaticResource DurationEntry}" />
+                                    <Label Grid.Column="1"
+                                           Text="h"
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                                <Grid Grid.Column="1"
+                                      ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="6">
+                                    <Entry Text="{Binding WorkRemainingMinutesText, Mode=TwoWay}"
+                                           IsEnabled="{Binding IsDurationEditingEnabled}"
+                                           Style="{StaticResource DurationEntry}" />
+                                    <Label Grid.Column="1"
+                                           Text="min"
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Border>
 
@@ -161,13 +230,33 @@
                               RowSpacing="10">
                             <Label Text="Break duration"
                                    Style="{StaticResource EyebrowLabel}" />
-                            <Label Grid.Row="1"
-                                   Text="{Binding BreakMinutesDisplay}"
-                                   FontSize="20"
-                                   FontAttributes="Bold" />
-                            <Stepper Grid.Row="2"
-                                     Value="{Binding BreakMinutes, Mode=TwoWay}"
-                                     IsEnabled="{Binding IsDurationEditingEnabled}" />
+                            <Grid Grid.Row="1"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="14">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="6">
+                                    <Entry Text="{Binding BreakHoursText, Mode=TwoWay}"
+                                           IsEnabled="{Binding IsDurationEditingEnabled}"
+                                           Style="{StaticResource DurationEntry}" />
+                                    <Label Grid.Column="1"
+                                           Text="h"
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                                <Grid Grid.Column="1"
+                                      ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="6">
+                                    <Entry Text="{Binding BreakRemainingMinutesText, Mode=TwoWay}"
+                                           IsEnabled="{Binding IsDurationEditingEnabled}"
+                                           Style="{StaticResource DurationEntry}" />
+                                    <Label Grid.Column="1"
+                                           Text="min"
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Border>
                 </Grid>
@@ -187,53 +276,59 @@
                                 Opacity="0.14" />
                     </Border.Shadow>
 
-                    <Grid ColumnDefinitions="{OnIdiom Phone='*,*', Desktop='Auto,Auto,Auto,*'}"
-                          RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
-                          ColumnSpacing="{OnIdiom Phone=16, Desktop=24}"
+                    <Grid RowDefinitions="Auto,Auto"
                           RowSpacing="12"
                           VerticalOptions="Center">
-                        <Label Text="Ambience"
-                               Style="{StaticResource EyebrowLabel}"
-                               VerticalOptions="Center" />
-
-                        <HorizontalStackLayout Grid.Column="{OnIdiom Phone=1, Desktop=1}"
-                                               Spacing="8"
-                                               HorizontalOptions="{OnIdiom Phone=End, Desktop=Start}"
-                                               VerticalOptions="Center">
-                            <Label Text="Rain"
-                                   FontSize="13"
-                                   Style="{StaticResource SecondaryLabel}"
+                        <Grid ColumnDefinitions="*,Auto,Auto"
+                              ColumnSpacing="{OnIdiom Phone=14, Desktop=24}">
+                            <Label Text="Ambience"
+                                   Style="{StaticResource EyebrowLabel}"
                                    VerticalOptions="Center" />
-                            <Switch IsToggled="{Binding IsRainAmbienceEnabled}" />
-                        </HorizontalStackLayout>
 
-                        <HorizontalStackLayout Grid.Row="{OnIdiom Phone=1, Desktop=0}"
-                                               Grid.Column="{OnIdiom Phone=0, Desktop=2}"
-                                               Spacing="8"
-                                               VerticalOptions="Center">
-                            <Label Text="Chill"
-                                   FontSize="13"
-                                   Style="{StaticResource SecondaryLabel}"
-                                   VerticalOptions="Center" />
-                            <Switch IsToggled="{Binding IsChillAmbienceEnabled}" />
-                        </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1"
+                                                   Spacing="8"
+                                                   VerticalOptions="Center">
+                                <Label Text="Rain"
+                                       FontSize="13"
+                                       Style="{StaticResource SecondaryLabel}"
+                                       VerticalOptions="Center" />
+                                <Switch IsToggled="{Binding IsRainAmbienceEnabled}" />
+                            </HorizontalStackLayout>
 
-                        <Grid Grid.Row="{OnIdiom Phone=1, Desktop=0}"
-                              Grid.Column="{OnIdiom Phone=1, Desktop=3}"
-                              ColumnDefinitions="*,Auto"
-                              ColumnSpacing="10"
+                            <HorizontalStackLayout Grid.Column="2"
+                                                   Spacing="8"
+                                                   VerticalOptions="Center">
+                                <Label Text="Chill"
+                                       FontSize="13"
+                                       Style="{StaticResource SecondaryLabel}"
+                                       VerticalOptions="Center" />
+                                <Switch IsToggled="{Binding IsChillAmbienceEnabled}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="12"
                               VerticalOptions="Center">
-                            <Slider Minimum="0"
+                            <Label Text="Volume"
+                                   FontSize="13"
+                                   Style="{StaticResource SecondaryLabel}"
+                                   VerticalOptions="Center" />
+                            <Slider Grid.Column="1"
+                                    Minimum="0"
                                     Maximum="1"
+                                    HeightRequest="38"
+                                    MinimumWidthRequest="220"
+                                    HorizontalOptions="Fill"
                                     Value="{Binding AmbienceVolume, Mode=TwoWay}"
                                     MinimumTrackColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}"
                                     MaximumTrackColor="{AppThemeBinding Light=#DDC4AA, Dark=#59433A}"
                                     ThumbColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
-                            <Label Grid.Column="1"
+                            <Label Grid.Column="2"
                                    Text="{Binding AmbienceVolumeDisplay}"
                                    FontSize="13"
                                    FontAttributes="Bold"
-                                   MinimumWidthRequest="36"
+                                   MinimumWidthRequest="42"
                                    HorizontalTextAlignment="End"
                                    VerticalOptions="Center"
                                    Style="{StaticResource SecondaryLabel}" />
@@ -259,6 +354,36 @@
                             Style="{StaticResource SecondaryButton}" />
                 </Grid>
             </Grid>
-        </ScrollView>
+                </ScrollView>
+
+                <Border x:Name="PlaceholderWorkspace"
+                        IsVisible="False"
+                        Opacity="0"
+                        Padding="32"
+                        MaximumWidthRequest="720"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                        BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="8"
+                                         HorizontalOptions="Center">
+                        <Label x:Name="PlaceholderTitle"
+                               Text="Tasks"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center" />
+                        <Label x:Name="PlaceholderSubtitle"
+                               Text="Coming next"
+                               FontSize="14"
+                               Style="{StaticResource SecondaryLabel}"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </ContentPage>

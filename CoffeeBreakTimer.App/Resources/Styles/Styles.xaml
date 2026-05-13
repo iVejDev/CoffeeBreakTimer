@@ -58,6 +58,33 @@
         </Setter>
     </Style>
 
+    <Style x:Key="SidebarNavButton" TargetType="Button">
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="14,11" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
+        <Setter Property="Shadow" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="DurationEntry" TargetType="Entry">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}" />
+        <Setter Property="PlaceholderColor"
+                Value="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="Keyboard" Value="Numeric" />
+        <Setter Property="MinimumWidthRequest" Value="54" />
+        <Setter Property="HeightRequest" Value="42" />
+    </Style>
+
     <Style TargetType="Stepper">
         <Setter Property="Minimum" Value="1" />
         <Setter Property="Maximum" Value="240" />
