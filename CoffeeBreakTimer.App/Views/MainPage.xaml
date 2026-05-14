@@ -146,6 +146,45 @@
                                    FontAttributes="Italic"
                                    HorizontalTextAlignment="Center"
                                    Style="{StaticResource SecondaryLabel}" />
+                            <Border Margin="0,8,0,0"
+                                    Padding="12,6"
+                                    WidthRequest="{OnIdiom Phone=250, Desktop=360}"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#CFFFF7EC, Dark=#802D231F}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="10">
+                                    <Label Text="Focus"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           Style="{StaticResource SecondaryLabel}"
+                                           VerticalOptions="Center" />
+                                    <Picker Grid.Column="1"
+                                            Title="Choose task"
+                                            ItemsSource="{Binding ActiveTasks}"
+                                            SelectedItem="{Binding SelectedFocusTask, Mode=TwoWay}"
+                                            IsEnabled="{Binding HasActiveTasks}"
+                                            FontSize="13"
+                                            HorizontalOptions="Fill"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
+                                            TitleColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}">
+                                        <Picker.ItemDisplayBinding>
+                                            <Binding Path="ShortTitle"
+                                                     x:DataType="viewModels:FocusTaskItemViewModel" />
+                                        </Picker.ItemDisplayBinding>
+                                    </Picker>
+                                </Grid>
+                            </Border>
+                            <Label Text="{Binding SelectedFocusTaskText}"
+                                   FontSize="12"
+                                   WidthRequest="{OnIdiom Phone=250, Desktop=390}"
+                                   MaxLines="1"
+                                   LineBreakMode="TailTruncation"
+                                   HorizontalTextAlignment="Center"
+                                   Style="{StaticResource SecondaryLabel}" />
                         </VerticalStackLayout>
 
                         <ProgressBar Grid.Row="1"
@@ -166,7 +205,7 @@
                 <Grid Grid.Row="2"
                       ColumnDefinitions="*,*"
                       ColumnSpacing="14">
-                    <Border Padding="18"
+                    <Border Padding="14"
                             StrokeThickness="1"
                             Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
                             BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
@@ -185,9 +224,9 @@
                                    Style="{StaticResource EyebrowLabel}" />
                             <Grid Grid.Row="1"
                                   ColumnDefinitions="*,*"
-                                  ColumnSpacing="14">
+                                  ColumnSpacing="8">
                                 <Grid ColumnDefinitions="*,Auto"
-                                      ColumnSpacing="6">
+                                      ColumnSpacing="4">
                                     <Entry Text="{Binding WorkHoursText, Mode=TwoWay}"
                                            IsEnabled="{Binding IsDurationEditingEnabled}"
                                            Style="{StaticResource DurationEntry}" />
@@ -199,7 +238,7 @@
                                 </Grid>
                                 <Grid Grid.Column="1"
                                       ColumnDefinitions="*,Auto"
-                                      ColumnSpacing="6">
+                                      ColumnSpacing="4">
                                     <Entry Text="{Binding WorkRemainingMinutesText, Mode=TwoWay}"
                                            IsEnabled="{Binding IsDurationEditingEnabled}"
                                            Style="{StaticResource DurationEntry}" />
@@ -214,7 +253,7 @@
                     </Border>
 
                     <Border Grid.Column="1"
-                            Padding="18"
+                            Padding="14"
                             StrokeThickness="1"
                             Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
                             BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
@@ -233,9 +272,9 @@
                                    Style="{StaticResource EyebrowLabel}" />
                             <Grid Grid.Row="1"
                                   ColumnDefinitions="*,*"
-                                  ColumnSpacing="14">
+                                  ColumnSpacing="8">
                                 <Grid ColumnDefinitions="*,Auto"
-                                      ColumnSpacing="6">
+                                      ColumnSpacing="4">
                                     <Entry Text="{Binding BreakHoursText, Mode=TwoWay}"
                                            IsEnabled="{Binding IsDurationEditingEnabled}"
                                            Style="{StaticResource DurationEntry}" />
@@ -247,7 +286,7 @@
                                 </Grid>
                                 <Grid Grid.Column="1"
                                       ColumnDefinitions="*,Auto"
-                                      ColumnSpacing="6">
+                                      ColumnSpacing="4">
                                     <Entry Text="{Binding BreakRemainingMinutesText, Mode=TwoWay}"
                                            IsEnabled="{Binding IsDurationEditingEnabled}"
                                            Style="{StaticResource DurationEntry}" />
@@ -470,6 +509,7 @@
                                                         <Label Text="{Binding Title}"
                                                                FontSize="15"
                                                                FontAttributes="Bold"
+                                                               MaxLines="1"
                                                                LineBreakMode="TailTruncation" />
                                                         <Label Text="{Binding ProgressText}"
                                                                FontSize="13"
@@ -489,6 +529,101 @@
                                 </CollectionView>
                             </Grid>
                         </Border>
+                    </Grid>
+                </ScrollView>
+
+                <ScrollView x:Name="StatisticsWorkspace"
+                            IsVisible="False"
+                            Opacity="0">
+                    <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
+                          RowDefinitions="Auto,Auto"
+                          RowSpacing="14"
+                          MaximumWidthRequest="720"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Statistics"
+                                   FontSize="{OnIdiom Phone=26, Desktop=32}"
+                                   FontAttributes="Bold"
+                                   LineBreakMode="NoWrap" />
+                            <Label Text="A quiet snapshot of your focus rhythm."
+                                   FontSize="15"
+                                   Style="{StaticResource SecondaryLabel}" />
+                        </VerticalStackLayout>
+
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="*,*"
+                              RowDefinitions="Auto,Auto"
+                              ColumnSpacing="14"
+                              RowSpacing="14">
+                            <Border Padding="20"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Focus time today"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="{Binding StatisticsFocusTimeTodayDisplay}"
+                                           FontSize="30"
+                                           FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border Grid.Column="1"
+                                    Padding="20"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Completed sessions"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="{Binding StatisticsCompletedSessionsDisplay}"
+                                           FontSize="30"
+                                           FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border Grid.Row="1"
+                                    Padding="20"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Completed tasks"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="{Binding StatisticsCompletedTasksDisplay}"
+                                           FontSize="30"
+                                           FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border Grid.Row="1"
+                                    Grid.Column="1"
+                                    Padding="20"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Current streak"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="{Binding StatisticsCurrentStreakDisplay}"
+                                           FontSize="30"
+                                           FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
                     </Grid>
                 </ScrollView>
 

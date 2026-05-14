@@ -14,9 +14,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ISettingsRepository _settingsRepository;
     private readonly IAmbiencePlayer _ambiencePlayer;
     private readonly ITaskRepository _taskRepository;
+    private readonly IStatisticsRepository _statisticsRepository;
     private readonly CancellationTokenSource _quoteRotationTokenSource = new();
+    private readonly List<FocusSessionRecord> _focusSessionRecords = [];
     private bool _isLoadingSettings;
     private bool _isUpdatingDurationText;
+    private bool _focusCompletionRecorded;
     private bool _disposed;
     private int _quoteIndex;
     private QuoteMode _quoteMode = QuoteMode.Focus;
@@ -102,22 +105,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string newTaskEstimatedSessionsText = string.Empty;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedFocusTaskText))]
+    private FocusTaskItemViewModel? selectedFocusTask;
+
     public MainViewModel(
         CoffeeTimerService timerService,
         ISettingsRepository settingsRepository,
         IAmbiencePlayer ambiencePlayer,
-        ITaskRepository taskRepository)
+        ITaskRepository taskRepository,
+        IStatisticsRepository statisticsRepository)
     {
         _timerService = timerService;
         _settingsRepository = settingsRepository;
         _ambiencePlayer = ambiencePlayer;
         _taskRepository = taskRepository;
+        _statisticsRepository = statisticsRepository;
 
         _timerService.StateChanged += OnTimerStateChanged;
         _ambiencePlayer.SetVolume(AmbienceVolume);
         LoadSettings();
         ApplySnapshot(_timerService.CurrentSnapshot);
         _ = LoadTasksAsync();
+        _ = LoadStatisticsAsync();
         _ = RotateQuotesAsync(_quoteRotationTokenSource.Token);
     }
 
@@ -150,11 +160,40 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<FocusTaskItemViewModel> Tasks { get; } = [];
 
+    public ObservableCollection<FocusTaskItemViewModel> ActiveTasks { get; } = [];
+
     public bool HasTasks => Tasks.Count > 0;
 
     public bool HasNoTasks => !HasTasks;
 
     public bool CanAddTask => !string.IsNullOrWhiteSpace(NewTaskTitle);
+
+    public bool HasActiveTasks => ActiveTasks.Count > 0;
+
+    public string SelectedFocusTaskText => SelectedFocusTask is null
+        ? "No task selected"
+        : SelectedFocusTask.DisplayText;
+
+    public string StatisticsFocusTimeTodayDisplay
+    {
+        get
+        {
+            var totalMinutes = _focusSessionRecords
+                .Where(session => IsToday(session.CompletedAt))
+                .Sum(session => session.FocusMinutes);
+
+            var hours = totalMinutes / 60;
+            var minutes = totalMinutes % 60;
+
+            return hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
+        }
+    }
+
+    public string StatisticsCompletedSessionsDisplay => _focusSessionRecords.Count.ToString();
+
+    public string StatisticsCompletedTasksDisplay => Tasks.Count(task => task.IsCompleted).ToString();
+
+    public string StatisticsCurrentStreakDisplay => CalculateCurrentStreak().ToString();
 
     [RelayCommand(CanExecute = nameof(CanStart))]
     private void Start()
@@ -213,7 +252,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        Tasks.Insert(0, CreateTaskItem(task));
+        var taskItem = CreateTaskItem(task);
+        Tasks.Insert(0, taskItem);
+        SelectedFocusTask ??= taskItem;
         NewTaskTitle = string.Empty;
         NewTaskEstimatedSessionsText = string.Empty;
         RefreshTaskState();
@@ -230,6 +271,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task DeleteTaskAsync(FocusTaskItemViewModel task)
     {
         Tasks.Remove(task);
+        if (SelectedFocusTask == task)
+        {
+            SelectedFocusTask = null;
+        }
+
         RefreshTaskState();
         await SaveTasksAsync();
     }
@@ -295,6 +341,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         RefreshCommandState();
     }
 
+    partial void OnSelectedFocusTaskChanged(FocusTaskItemViewModel? value)
+    {
+        OnPropertyChanged(nameof(SelectedFocusTaskText));
+    }
+
     partial void OnIsRainAmbienceEnabledChanged(bool value)
     {
         _ambiencePlayer.SetEnabled(AmbienceTrack.Rain, value);
@@ -347,6 +398,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void ApplySnapshot(CoffeeTimerSnapshot snapshot)
     {
+        if (snapshot.SessionType == SessionType.Work && snapshot.RunState == TimerRunState.Running)
+        {
+            _focusCompletionRecorded = false;
+        }
+
+        if (snapshot.SessionType == SessionType.Work &&
+            snapshot.RunState == TimerRunState.Completed &&
+            !_focusCompletionRecorded)
+        {
+            _focusCompletionRecorded = true;
+            _ = RegisterCompletedFocusSessionAsync(snapshot.Duration);
+        }
+
         SessionType = snapshot.SessionType;
         RunState = snapshot.RunState;
         Progress = snapshot.Progress;
@@ -379,6 +443,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
 
             RefreshTaskState();
+            RefreshStatisticsState();
+        });
+    }
+
+    private async Task LoadStatisticsAsync()
+    {
+        var sessions = await _statisticsRepository.LoadFocusSessionsAsync();
+
+        await MainThread.InvokeOnMainThreadAsync(() =>
+        {
+            _focusSessionRecords.Clear();
+            _focusSessionRecords.AddRange(sessions);
+            RefreshStatisticsState();
         });
     }
 
@@ -395,8 +472,79 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void RefreshTaskState()
     {
+        RefreshActiveTasks();
         OnPropertyChanged(nameof(HasTasks));
         OnPropertyChanged(nameof(HasNoTasks));
+        OnPropertyChanged(nameof(HasActiveTasks));
+        OnPropertyChanged(nameof(SelectedFocusTaskText));
+        RefreshStatisticsState();
+    }
+
+    private async Task RegisterCompletedFocusSessionAsync(TimeSpan focusDuration)
+    {
+        _focusSessionRecords.Add(FocusSessionRecord.Create(focusDuration));
+
+        if (SelectedFocusTask is not null && !SelectedFocusTask.IsCompleted)
+        {
+            SelectedFocusTask.RegisterCompletedFocusSession();
+            OnPropertyChanged(nameof(SelectedFocusTaskText));
+            await SaveTasksAsync();
+        }
+
+        await _statisticsRepository.SaveFocusSessionsAsync(_focusSessionRecords);
+        RefreshStatisticsState();
+    }
+
+    private void RefreshActiveTasks()
+    {
+        var selectedTaskId = SelectedFocusTask?.Id;
+        var activeTasks = Tasks.Where(task => !task.IsCompleted).ToList();
+
+        ActiveTasks.Clear();
+
+        foreach (var task in activeTasks)
+        {
+            ActiveTasks.Add(task);
+        }
+
+        if (selectedTaskId is null)
+        {
+            return;
+        }
+
+        SelectedFocusTask = ActiveTasks.FirstOrDefault(task => task.Id == selectedTaskId);
+    }
+
+    private void RefreshStatisticsState()
+    {
+        OnPropertyChanged(nameof(StatisticsFocusTimeTodayDisplay));
+        OnPropertyChanged(nameof(StatisticsCompletedSessionsDisplay));
+        OnPropertyChanged(nameof(StatisticsCompletedTasksDisplay));
+        OnPropertyChanged(nameof(StatisticsCurrentStreakDisplay));
+    }
+
+    private int CalculateCurrentStreak()
+    {
+        var sessionDates = _focusSessionRecords
+            .Select(session => DateOnly.FromDateTime(session.CompletedAt.LocalDateTime.Date))
+            .Distinct()
+            .ToHashSet();
+
+        var cursor = DateOnly.FromDateTime(DateTime.Now.Date);
+        var streak = 0;
+
+        while (sessionDates.Contains(cursor))
+        {
+            streak++;
+            cursor = cursor.AddDays(-1);
+        }
+
+        return streak;
+    }
+
+    private static bool IsToday(DateTimeOffset completedAt)
+    {
+        return completedAt.LocalDateTime.Date == DateTime.Now.Date;
     }
 
     private static string FormatTime(TimeSpan time)

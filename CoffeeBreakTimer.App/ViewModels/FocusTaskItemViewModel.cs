@@ -14,6 +14,11 @@ public partial class FocusTaskItemViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CompletionMark))]
     private bool isCompleted;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProgressText))]
+    [NotifyPropertyChangedFor(nameof(DisplayText))]
+    private int completedFocusSessions;
+
     public FocusTaskItemViewModel(
         FocusTask task,
         Func<FocusTaskItemViewModel, Task> toggleTask,
@@ -34,9 +39,9 @@ public partial class FocusTaskItemViewModel : ObservableObject
 
     public string Title { get; }
 
-    public int? EstimatedFocusSessions { get; }
+    public string ShortTitle => Truncate(Title, 44);
 
-    public int CompletedFocusSessions { get; }
+    public int? EstimatedFocusSessions { get; }
 
     public DateTimeOffset CreatedAt { get; }
 
@@ -57,6 +62,8 @@ public partial class FocusTaskItemViewModel : ObservableObject
 
     public string CompletionMark => IsCompleted ? "✓" : string.Empty;
 
+    public string DisplayText => $"{ShortTitle} - {ProgressText}";
+
     partial void OnIsCompletedChanged(bool value)
     {
         CompletedAt = value ? DateTimeOffset.UtcNow : null;
@@ -74,6 +81,22 @@ public partial class FocusTaskItemViewModel : ObservableObject
             CreatedAt = CreatedAt,
             CompletedAt = CompletedAt
         };
+    }
+
+    public void RegisterCompletedFocusSession()
+    {
+        CompletedFocusSessions++;
+        OnPropertyChanged(nameof(DisplayText));
+    }
+
+    private static string Truncate(string value, int maxLength)
+    {
+        if (value.Length <= maxLength)
+        {
+            return value;
+        }
+
+        return $"{value[..Math.Max(0, maxLength - 1)]}...";
     }
 
     [RelayCommand]

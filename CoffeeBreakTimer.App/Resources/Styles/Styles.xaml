@@ -77,11 +77,11 @@
                 Value="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}" />
         <Setter Property="PlaceholderColor"
                 Value="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
-        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="Keyboard" Value="Numeric" />
-        <Setter Property="MinimumWidthRequest" Value="54" />
+        <Setter Property="MinimumWidthRequest" Value="42" />
         <Setter Property="HeightRequest" Value="42" />
     </Style>
 
