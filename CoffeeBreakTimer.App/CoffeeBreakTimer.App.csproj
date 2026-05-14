@@ -11,6 +11,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
+		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
 		<ApplicationTitle>CoffeeBreakerTimer</ApplicationTitle>
 		<ApplicationId>com.companyname.coffeebreakertimer</ApplicationId>

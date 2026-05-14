@@ -420,7 +420,7 @@
                             IsVisible="False"
                             Opacity="0">
                     <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                          RowDefinitions="Auto,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto"
                           RowSpacing="14"
                           MaximumWidthRequest="720"
                           HorizontalOptions="Center"
@@ -515,36 +515,81 @@
                                                 <Border.StrokeShape>
                                                     <RoundRectangle CornerRadius="8" />
                                                 </Border.StrokeShape>
-                                                <Grid ColumnDefinitions="Auto,*,Auto"
-                                                      ColumnSpacing="12">
-                                                    <Button Text="{Binding CompletionMark}"
-                                                            Command="{Binding ToggleCommand}"
-                                                            WidthRequest="34"
-                                                            HeightRequest="34"
-                                                            Padding="0"
-                                                            CornerRadius="17"
-                                                            FontSize="16"
-                                                            VerticalOptions="Center"
-                                                            Style="{StaticResource SecondaryButton}" />
-                                                    <VerticalStackLayout Grid.Column="1"
-                                                                         Spacing="2"
-                                                                         VerticalOptions="Center">
-                                                        <Label Text="{Binding Title}"
-                                                               FontSize="15"
-                                                               FontAttributes="Bold"
-                                                               MaxLines="1"
-                                                               LineBreakMode="TailTruncation" />
-                                                        <Label Text="{Binding FocusCardProgressText}"
-                                                               FontSize="13"
-                                                               Style="{StaticResource SecondaryLabel}" />
-                                                    </VerticalStackLayout>
-                                                    <Button Grid.Column="2"
-                                                            Text="Delete"
-                                                            Command="{Binding DeleteCommand}"
-                                                            Style="{StaticResource SecondaryButton}"
-                                                            Padding="12,8"
-                                                            FontSize="12"
-                                                            VerticalOptions="Center" />
+                                                <Grid>
+                                                    <Grid IsVisible="{Binding IsNotEditing}"
+                                                          ColumnDefinitions="Auto,*,Auto"
+                                                          ColumnSpacing="12">
+                                                        <Button Text="{Binding CompletionMark}"
+                                                                Command="{Binding ToggleCommand}"
+                                                                WidthRequest="34"
+                                                                HeightRequest="34"
+                                                                Padding="0"
+                                                                CornerRadius="17"
+                                                                FontSize="16"
+                                                                VerticalOptions="Center"
+                                                                Style="{StaticResource SecondaryButton}" />
+                                                        <VerticalStackLayout Grid.Column="1"
+                                                                             Spacing="2"
+                                                                             VerticalOptions="Center">
+                                                            <Label Text="{Binding Title}"
+                                                                   FontSize="15"
+                                                                   FontAttributes="Bold"
+                                                                   MaxLines="1"
+                                                                   LineBreakMode="TailTruncation" />
+                                                            <Label Text="{Binding FocusCardProgressText}"
+                                                                   FontSize="13"
+                                                                   Style="{StaticResource SecondaryLabel}" />
+                                                        </VerticalStackLayout>
+                                                        <HorizontalStackLayout Grid.Column="2"
+                                                                               Spacing="8"
+                                                                               VerticalOptions="Center">
+                                                            <Button Text="Edit"
+                                                                    Command="{Binding BeginEditCommand}"
+                                                                    Style="{StaticResource SecondaryButton}"
+                                                                    Padding="12,8"
+                                                                    FontSize="12" />
+                                                            <Button Text="Delete"
+                                                                    Command="{Binding DeleteCommand}"
+                                                                    Style="{StaticResource SecondaryButton}"
+                                                                    Padding="12,8"
+                                                                    FontSize="12" />
+                                                        </HorizontalStackLayout>
+                                                    </Grid>
+
+                                                    <Grid IsVisible="{Binding IsEditing}"
+                                                          ColumnDefinitions="*,Auto"
+                                                          RowDefinitions="Auto,Auto"
+                                                          ColumnSpacing="10"
+                                                          RowSpacing="10">
+                                                        <Entry Text="{Binding EditTitle, Mode=TwoWay}"
+                                                               Placeholder="Task title"
+                                                               BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
+                                                               TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
+                                                               PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+                                                        <Entry Grid.Column="1"
+                                                               Text="{Binding EditEstimatedSessionsText, Mode=TwoWay}"
+                                                               Placeholder="Sessions"
+                                                               Keyboard="Numeric"
+                                                               WidthRequest="96"
+                                                               HorizontalTextAlignment="Center"
+                                                               BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
+                                                               TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
+                                                               PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+                                                        <HorizontalStackLayout Grid.Row="1"
+                                                                               Grid.ColumnSpan="2"
+                                                                               Spacing="8"
+                                                                               HorizontalOptions="End">
+                                                            <Button Text="Cancel"
+                                                                    Command="{Binding CancelEditCommand}"
+                                                                    Style="{StaticResource SecondaryButton}"
+                                                                    Padding="12,8"
+                                                                    FontSize="12" />
+                                                            <Button Text="Save"
+                                                                    Command="{Binding SaveEditCommand}"
+                                                                    Padding="12,8"
+                                                                    FontSize="12" />
+                                                        </HorizontalStackLayout>
+                                                    </Grid>
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>
@@ -709,6 +754,62 @@
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
+
+                        <Border Grid.Row="3"
+                                Padding="18"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  RowSpacing="10">
+                                <Label Text="Recent focus sessions"
+                                       Style="{StaticResource EyebrowLabel}" />
+
+                                <VerticalStackLayout Grid.Row="1"
+                                                     IsVisible="{Binding HasNoRecentFocusSessions}"
+                                                     Spacing="4">
+                                    <Label Text="No focus history yet"
+                                           FontSize="15"
+                                           FontAttributes="Bold" />
+                                    <Label Text="Completed focus sessions will appear here."
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}" />
+                                </VerticalStackLayout>
+
+                                <CollectionView Grid.Row="1"
+                                                ItemsSource="{Binding RecentFocusSessions}"
+                                                IsVisible="{Binding HasRecentFocusSessions}"
+                                                SelectionMode="None">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="viewModels:FocusSessionHistoryItemViewModel">
+                                            <Grid Padding="0,8"
+                                                  ColumnDefinitions="*,Auto"
+                                                  ColumnSpacing="12">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="{Binding TaskTitleDisplay}"
+                                                           FontSize="14"
+                                                           FontAttributes="Bold"
+                                                           MaxLines="1"
+                                                           LineBreakMode="TailTruncation" />
+                                                    <Label Text="{Binding CompletedAtDisplay}"
+                                                           FontSize="12"
+                                                           Style="{StaticResource SecondaryLabel}" />
+                                                </VerticalStackLayout>
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding DurationDisplay}"
+                                                       FontSize="13"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"
+                                                       Style="{StaticResource SecondaryLabel}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Border>
                     </Grid>
                 </ScrollView>
 
@@ -739,11 +840,34 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="8" />
                             </Border.StrokeShape>
-                            <Grid RowDefinitions="Auto,Auto"
+                            <Grid RowDefinitions="Auto,Auto,Auto"
                                   RowSpacing="12">
                                 <Label Text="Timer defaults"
                                        Style="{StaticResource EyebrowLabel}" />
+
                                 <Grid Grid.Row="1"
+                                      ColumnDefinitions="*,*,*"
+                                      ColumnSpacing="8">
+                                    <Button Text="Classic"
+                                            Command="{Binding ApplyClassicPresetCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="14,9"
+                                            FontSize="12" />
+                                    <Button Grid.Column="1"
+                                            Text="Deep work"
+                                            Command="{Binding ApplyDeepWorkPresetCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="14,9"
+                                            FontSize="12" />
+                                    <Button Grid.Column="2"
+                                            Text="Long flow"
+                                            Command="{Binding ApplyLongFlowPresetCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="14,9"
+                                            FontSize="12" />
+                                </Grid>
+
+                                <Grid Grid.Row="2"
                                       ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,*'}"
                                       RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
                                       ColumnSpacing="14"

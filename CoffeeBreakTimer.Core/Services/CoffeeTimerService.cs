@@ -11,16 +11,18 @@ public sealed class CoffeeTimerService : IDisposable
 
     private readonly ITimerService _timer;
     private readonly IAudioPlayer _audio;
+    private readonly INotificationService _notifications;
     private readonly Stopwatch _stopwatch = new();
 
     private TimerSettings _settings = TimerSettings.Default;
     private TimeSpan _elapsedBeforePause = TimeSpan.Zero;
     private bool _disposed;
 
-    public CoffeeTimerService(ITimerService timer, IAudioPlayer audio)
+    public CoffeeTimerService(ITimerService timer, IAudioPlayer audio, INotificationService notifications)
     {
         _timer = timer;
         _audio = audio;
+        _notifications = notifications;
 
         _timer.Tick += OnTick;
 
@@ -145,11 +147,13 @@ public sealed class CoffeeTimerService : IDisposable
         if (CurrentSession == SessionType.Work)
         {
             _audio.Play("focus_end");
+            _ = _notifications.ShowSessionCompletedAsync(SessionType.Work);
             StartSession(SessionType.Break, _settings.BreakDuration);
             return;
         }
 
         _audio.Play("break_end");
+        _ = _notifications.ShowSessionCompletedAsync(SessionType.Break);
         CurrentSession = SessionType.Work;
         CurrentDuration = _settings.WorkDuration;
         _elapsedBeforePause = TimeSpan.Zero;

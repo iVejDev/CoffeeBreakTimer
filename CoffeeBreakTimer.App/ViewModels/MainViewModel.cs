@@ -54,6 +54,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(StartButtonText))]
     [NotifyPropertyChangedFor(nameof(IsDurationEditingEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanApplyTimerPreset))]
     private TimerRunState runState = TimerRunState.Ready;
 
     [ObservableProperty]
@@ -164,6 +165,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public bool IsDurationEditingEnabled => RunState is TimerRunState.Ready or TimerRunState.Completed;
 
+    public bool CanApplyTimerPreset => IsDurationEditingEnabled;
+
     public bool CanStart => RunState != TimerRunState.Running;
 
     public bool CanPause => RunState == TimerRunState.Running;
@@ -176,6 +179,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<FocusTaskItemViewModel> ActiveTasks { get; } = [];
 
+    public ObservableCollection<FocusSessionHistoryItemViewModel> RecentFocusSessions { get; } = [];
+
     public bool HasTasks => Tasks.Count > 0;
 
     public bool HasNoTasks => !HasTasks;
@@ -183,6 +188,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public bool CanAddTask => !string.IsNullOrWhiteSpace(NewTaskTitle);
 
     public bool HasActiveTasks => ActiveTasks.Count > 0;
+
+    public bool HasRecentFocusSessions => RecentFocusSessions.Count > 0;
+
+    public bool HasNoRecentFocusSessions => !HasRecentFocusSessions;
 
     public string SelectedFocusTaskText => SelectedFocusTask is null
         ? "No task selected"
@@ -325,6 +334,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         SelectedFocusTask = null;
     }
 
+    [RelayCommand(CanExecute = nameof(CanApplyTimerPreset))]
+    private void ApplyClassicPreset() => ApplyPreset(25, 5);
+
+    [RelayCommand(CanExecute = nameof(CanApplyTimerPreset))]
+    private void ApplyDeepWorkPreset() => ApplyPreset(50, 10);
+
+    [RelayCommand(CanExecute = nameof(CanApplyTimerPreset))]
+    private void ApplyLongFlowPreset() => ApplyPreset(90, 15);
+
     private async Task ToggleTaskAsync(FocusTaskItemViewModel task)
     {
         task.IsCompleted = !task.IsCompleted;
@@ -340,6 +358,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
             SelectedFocusTask = null;
         }
 
+        RefreshTaskState();
+        await SaveTasksAsync();
+    }
+
+    private async Task SaveEditedTaskAsync(FocusTaskItemViewModel task)
+    {
+        OnPropertyChanged(nameof(SelectedFocusTaskText));
+        OnPropertyChanged(nameof(SelectedFocusTaskTitle));
+        OnPropertyChanged(nameof(SelectedFocusTaskProgressText));
         RefreshTaskState();
         await SaveTasksAsync();
     }
@@ -535,9 +562,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
         StartCommand.NotifyCanExecuteChanged();
         PauseCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
+        ApplyClassicPresetCommand.NotifyCanExecuteChanged();
+        ApplyDeepWorkPresetCommand.NotifyCanExecuteChanged();
+        ApplyLongFlowPresetCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(CanStart));
         OnPropertyChanged(nameof(CanPause));
         OnPropertyChanged(nameof(CanReset));
+        OnPropertyChanged(nameof(CanApplyTimerPreset));
+    }
+
+    private void ApplyPreset(int workMinutes, int breakMinutes)
+    {
+        WorkMinutes = workMinutes;
+        BreakMinutes = breakMinutes;
     }
 
     private async Task LoadTasksAsync()
@@ -566,6 +603,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             _focusSessionRecords.Clear();
             _focusSessionRecords.AddRange(sessions);
+            RefreshSessionHistory();
             RefreshStatisticsState();
         });
     }
@@ -578,7 +616,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private FocusTaskItemViewModel CreateTaskItem(FocusTask task)
     {
-        return new FocusTaskItemViewModel(task, ToggleTaskAsync, DeleteTaskAsync);
+        return new FocusTaskItemViewModel(task, ToggleTaskAsync, DeleteTaskAsync, SaveEditedTaskAsync);
     }
 
     private void RefreshTaskState()
@@ -597,7 +635,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private async Task RegisterCompletedFocusSessionAsync(TimeSpan focusDuration)
     {
-        _focusSessionRecords.Add(FocusSessionRecord.Create(focusDuration));
+        var linkedTask = SelectedFocusTask;
+        var sessionRecord = FocusSessionRecord.Create(focusDuration, linkedTask?.Id, linkedTask?.Title);
+        _focusSessionRecords.Add(sessionRecord);
 
         if (SelectedFocusTask is not null && !SelectedFocusTask.IsCompleted)
         {
@@ -608,7 +648,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         await _statisticsRepository.SaveFocusSessionsAsync(_focusSessionRecords);
+        RefreshSessionHistory();
         RefreshStatisticsState();
+    }
+
+    private void RefreshSessionHistory()
+    {
+        RecentFocusSessions.Clear();
+
+        foreach (var session in _focusSessionRecords
+            .OrderByDescending(session => session.CompletedAt)
+            .Take(5))
+        {
+            RecentFocusSessions.Add(new FocusSessionHistoryItemViewModel(session));
+        }
+
+        OnPropertyChanged(nameof(HasRecentFocusSessions));
+        OnPropertyChanged(nameof(HasNoRecentFocusSessions));
     }
 
     private void RefreshActiveTasks()
@@ -644,6 +700,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(StatisticsCurrentStreakLabel));
         OnPropertyChanged(nameof(StatisticsTodaySummaryText));
         OnPropertyChanged(nameof(StatisticsTaskSummaryText));
+        OnPropertyChanged(nameof(HasRecentFocusSessions));
+        OnPropertyChanged(nameof(HasNoRecentFocusSessions));
     }
 
     private int CalculateCurrentStreak()
