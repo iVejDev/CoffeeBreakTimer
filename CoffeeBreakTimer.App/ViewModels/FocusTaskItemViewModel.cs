@@ -16,6 +16,8 @@ public partial class FocusTaskItemViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProgressText))]
+    [NotifyPropertyChangedFor(nameof(FocusCardProgressText))]
+    [NotifyPropertyChangedFor(nameof(IsEstimateReached))]
     [NotifyPropertyChangedFor(nameof(DisplayText))]
     private int completedFocusSessions;
 
@@ -47,18 +49,26 @@ public partial class FocusTaskItemViewModel : ObservableObject
 
     public DateTimeOffset? CompletedAt { get; private set; }
 
+    public bool IsEstimateReached =>
+        EstimatedFocusSessions is not null &&
+        CompletedFocusSessions >= EstimatedFocusSessions.Value;
+
     public string ProgressText
     {
         get
         {
             if (EstimatedFocusSessions is null)
             {
-                return $"{CompletedFocusSessions} sessions";
+                return $"{CompletedFocusSessions} focus sessions";
             }
 
-            return $"{CompletedFocusSessions}/{EstimatedFocusSessions} sessions";
+            return $"{CompletedFocusSessions} / {EstimatedFocusSessions} focus sessions";
         }
     }
+
+    public string FocusCardProgressText => IsEstimateReached
+        ? $"Goal reached - {ProgressText}"
+        : ProgressText;
 
     public string CompletionMark => IsCompleted ? "✓" : string.Empty;
 

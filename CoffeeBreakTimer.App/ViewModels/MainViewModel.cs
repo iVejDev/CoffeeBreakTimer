@@ -113,6 +113,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SelectedFocusTaskText))]
+    [NotifyPropertyChangedFor(nameof(SelectedFocusTaskTitle))]
+    [NotifyPropertyChangedFor(nameof(SelectedFocusTaskProgressText))]
+    [NotifyPropertyChangedFor(nameof(FocusTaskPickerTitle))]
+    [NotifyPropertyChangedFor(nameof(CanClearFocusTask))]
     private FocusTaskItemViewModel? selectedFocusTask;
 
     public MainViewModel(
@@ -184,6 +188,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ? "No task selected"
         : SelectedFocusTask.DisplayText;
 
+    public string SelectedFocusTaskTitle => SelectedFocusTask?.ShortTitle ?? "No task selected";
+
+    public string SelectedFocusTaskProgressText => SelectedFocusTask?.FocusCardProgressText ?? "Choose a task to connect this focus session.";
+
+    public string FocusTaskPickerTitle => HasActiveTasks
+        ? SelectedFocusTask is null ? "Choose" : "Change"
+        : "No tasks";
+
+    public bool CanClearFocusTask => SelectedFocusTask is not null;
+
     public string StatisticsFocusTimeTodayDisplay
     {
         get
@@ -201,9 +215,43 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public string StatisticsCompletedSessionsDisplay => _focusSessionRecords.Count.ToString();
 
+    public string StatisticsTodaySessionsDisplay => _focusSessionRecords.Count(session => IsToday(session.CompletedAt)).ToString();
+
     public string StatisticsCompletedTasksDisplay => Tasks.Count(task => task.IsCompleted).ToString();
 
+    public string StatisticsTaskCompletionDisplay => Tasks.Count == 0
+        ? "0 / 0 tasks"
+        : $"{Tasks.Count(task => task.IsCompleted)} / {Tasks.Count} tasks";
+
+    public double StatisticsTaskCompletionProgress => Tasks.Count == 0
+        ? 0
+        : (double)Tasks.Count(task => task.IsCompleted) / Tasks.Count;
+
+    public string StatisticsActiveTasksDisplay => Tasks.Count(task => !task.IsCompleted).ToString();
+
     public string StatisticsCurrentStreakDisplay => CalculateCurrentStreak().ToString();
+
+    public string StatisticsCurrentStreakLabel => CalculateCurrentStreak() == 1 ? "day" : "days";
+
+    public string StatisticsTodaySummaryText
+    {
+        get
+        {
+            var sessionCount = _focusSessionRecords.Count(session => IsToday(session.CompletedAt));
+
+            if (sessionCount == 0)
+            {
+                return "No completed focus sessions yet today.";
+            }
+
+            var sessionLabel = sessionCount == 1 ? "session" : "sessions";
+            return $"{StatisticsFocusTimeTodayDisplay} across {sessionCount} {sessionLabel} today.";
+        }
+    }
+
+    public string StatisticsTaskSummaryText => Tasks.Count == 0
+        ? "Add a task to start tracking progress."
+        : $"{StatisticsTaskCompletionDisplay} completed.";
 
     [RelayCommand(CanExecute = nameof(CanStart))]
     private void Start()
@@ -269,6 +317,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         NewTaskEstimatedSessionsText = string.Empty;
         RefreshTaskState();
         await SaveTasksAsync();
+    }
+
+    [RelayCommand]
+    private void ClearFocusTask()
+    {
+        SelectedFocusTask = null;
     }
 
     private async Task ToggleTaskAsync(FocusTaskItemViewModel task)
@@ -354,6 +408,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnSelectedFocusTaskChanged(FocusTaskItemViewModel? value)
     {
         OnPropertyChanged(nameof(SelectedFocusTaskText));
+        OnPropertyChanged(nameof(SelectedFocusTaskTitle));
+        OnPropertyChanged(nameof(SelectedFocusTaskProgressText));
+        OnPropertyChanged(nameof(FocusTaskPickerTitle));
+        OnPropertyChanged(nameof(CanClearFocusTask));
     }
 
     partial void OnIsRainAmbienceEnabledChanged(bool value)
@@ -530,6 +588,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(HasNoTasks));
         OnPropertyChanged(nameof(HasActiveTasks));
         OnPropertyChanged(nameof(SelectedFocusTaskText));
+        OnPropertyChanged(nameof(SelectedFocusTaskTitle));
+        OnPropertyChanged(nameof(SelectedFocusTaskProgressText));
+        OnPropertyChanged(nameof(FocusTaskPickerTitle));
+        OnPropertyChanged(nameof(CanClearFocusTask));
         RefreshStatisticsState();
     }
 
@@ -541,6 +603,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             SelectedFocusTask.RegisterCompletedFocusSession();
             OnPropertyChanged(nameof(SelectedFocusTaskText));
+            OnPropertyChanged(nameof(SelectedFocusTaskProgressText));
             await SaveTasksAsync();
         }
 
@@ -571,9 +634,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void RefreshStatisticsState()
     {
         OnPropertyChanged(nameof(StatisticsFocusTimeTodayDisplay));
+        OnPropertyChanged(nameof(StatisticsTodaySessionsDisplay));
         OnPropertyChanged(nameof(StatisticsCompletedSessionsDisplay));
         OnPropertyChanged(nameof(StatisticsCompletedTasksDisplay));
+        OnPropertyChanged(nameof(StatisticsTaskCompletionDisplay));
+        OnPropertyChanged(nameof(StatisticsTaskCompletionProgress));
+        OnPropertyChanged(nameof(StatisticsActiveTasksDisplay));
         OnPropertyChanged(nameof(StatisticsCurrentStreakDisplay));
+        OnPropertyChanged(nameof(StatisticsCurrentStreakLabel));
+        OnPropertyChanged(nameof(StatisticsTodaySummaryText));
+        OnPropertyChanged(nameof(StatisticsTaskSummaryText));
     }
 
     private int CalculateCurrentStreak()

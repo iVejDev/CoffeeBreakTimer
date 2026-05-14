@@ -147,44 +147,64 @@
                                    HorizontalTextAlignment="Center"
                                    Style="{StaticResource SecondaryLabel}" />
                             <Border Margin="0,8,0,0"
-                                    Padding="12,6"
-                                    WidthRequest="{OnIdiom Phone=250, Desktop=360}"
+                                    Padding="{OnIdiom Phone='12,10', Desktop='14,10'}"
+                                    WidthRequest="{OnIdiom Phone=250, Desktop=390}"
                                     StrokeThickness="1"
                                     Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
                                     BackgroundColor="{AppThemeBinding Light=#CFFFF7EC, Dark=#802D231F}">
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
+                                    <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
-                                <Grid ColumnDefinitions="Auto,*"
-                                      ColumnSpacing="10">
-                                    <Label Text="Focus"
-                                           FontSize="13"
-                                           FontAttributes="Bold"
-                                           Style="{StaticResource SecondaryLabel}"
-                                           VerticalOptions="Center" />
-                                    <Picker Grid.Column="1"
-                                            Title="Choose task"
-                                            ItemsSource="{Binding ActiveTasks}"
-                                            SelectedItem="{Binding SelectedFocusTask, Mode=TwoWay}"
-                                            IsEnabled="{Binding HasActiveTasks}"
-                                            FontSize="13"
-                                            HorizontalOptions="Fill"
-                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
-                                            TitleColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}">
-                                        <Picker.ItemDisplayBinding>
-                                            <Binding Path="ShortTitle"
-                                                     x:DataType="viewModels:FocusTaskItemViewModel" />
-                                        </Picker.ItemDisplayBinding>
-                                    </Picker>
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="12">
+                                    <VerticalStackLayout Spacing="2"
+                                                         VerticalOptions="Center">
+                                        <Label Text="Current task"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               TextTransform="Uppercase"
+                                               CharacterSpacing="0.6"
+                                               Style="{StaticResource SecondaryLabel}" />
+                                        <Label Text="{Binding SelectedFocusTaskTitle}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               MaxLines="1"
+                                               LineBreakMode="TailTruncation"
+                                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+                                        <Label Text="{Binding SelectedFocusTaskProgressText}"
+                                               FontSize="12"
+                                               MaxLines="1"
+                                               LineBreakMode="TailTruncation"
+                                               Style="{StaticResource SecondaryLabel}" />
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="4"
+                                                         WidthRequest="104"
+                                                         VerticalOptions="Center">
+                                        <Picker Title="{Binding FocusTaskPickerTitle}"
+                                                ItemsSource="{Binding ActiveTasks}"
+                                                SelectedItem="{Binding SelectedFocusTask, Mode=TwoWay}"
+                                                IsEnabled="{Binding HasActiveTasks}"
+                                                FontSize="12"
+                                                HorizontalOptions="Fill"
+                                                BackgroundColor="{AppThemeBinding Light=#BFFFF2E2, Dark=#663A2A24}"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
+                                                TitleColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}">
+                                            <Picker.ItemDisplayBinding>
+                                                <Binding Path="ShortTitle"
+                                                         x:DataType="viewModels:FocusTaskItemViewModel" />
+                                            </Picker.ItemDisplayBinding>
+                                        </Picker>
+                                        <Button Text="Clear"
+                                                Command="{Binding ClearFocusTaskCommand}"
+                                                IsVisible="{Binding CanClearFocusTask}"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Padding="8,4"
+                                                FontSize="11"
+                                                HeightRequest="30" />
+                                    </VerticalStackLayout>
                                 </Grid>
                             </Border>
-                            <Label Text="{Binding SelectedFocusTaskText}"
-                                   FontSize="12"
-                                   WidthRequest="{OnIdiom Phone=250, Desktop=390}"
-                                   MaxLines="1"
-                                   LineBreakMode="TailTruncation"
-                                   HorizontalTextAlignment="Center"
-                                   Style="{StaticResource SecondaryLabel}" />
                         </VerticalStackLayout>
 
                         <ProgressBar Grid.Row="1"
@@ -430,9 +450,9 @@
                                         Opacity="0.16" />
                             </Border.Shadow>
 
-                            <Grid ColumnDefinitions="*,Auto,Auto"
+                            <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto,Auto'}"
                                   ColumnSpacing="10"
-                                  RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
+                                  RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto', Desktop='Auto'}"
                                   RowSpacing="10">
                                 <Entry Text="{Binding NewTaskTitle, Mode=TwoWay}"
                                        Placeholder="What are you focusing on?"
@@ -440,7 +460,8 @@
                                        BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
                                        TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
                                        PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
-                                <Entry Grid.Column="1"
+                                <Entry Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                       Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                        Text="{Binding NewTaskEstimatedSessionsText, Mode=TwoWay}"
                                        Placeholder="Sessions"
                                        Keyboard="Numeric"
@@ -449,8 +470,10 @@
                                        BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
                                        TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
                                        PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
-                                <Button Grid.Column="2"
+                                <Button Grid.Row="{OnIdiom Phone=2, Desktop=0}"
+                                        Grid.Column="{OnIdiom Phone=0, Desktop=2}"
                                         Text="Add"
+                                        HorizontalOptions="Fill"
                                         Command="{Binding AddTaskCommand}" />
                             </Grid>
                         </Border>
@@ -511,7 +534,7 @@
                                                                FontAttributes="Bold"
                                                                MaxLines="1"
                                                                LineBreakMode="TailTruncation" />
-                                                        <Label Text="{Binding ProgressText}"
+                                                        <Label Text="{Binding FocusCardProgressText}"
                                                                FontSize="13"
                                                                Style="{StaticResource SecondaryLabel}" />
                                                     </VerticalStackLayout>
@@ -536,7 +559,7 @@
                             IsVisible="False"
                             Opacity="0">
                     <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                          RowDefinitions="Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto"
                           RowSpacing="14"
                           MaximumWidthRequest="720"
                           HorizontalOptions="Center"
@@ -547,13 +570,74 @@
                                    FontAttributes="Bold"
                                    LineBreakMode="NoWrap" />
                             <Label Text="A quiet snapshot of your focus rhythm."
-                                   FontSize="15"
-                                   Style="{StaticResource SecondaryLabel}" />
+                               FontSize="15"
+                               Style="{StaticResource SecondaryLabel}" />
                         </VerticalStackLayout>
 
-                        <Grid Grid.Row="1"
-                              ColumnDefinitions="*,*"
-                              RowDefinitions="Auto,Auto"
+                        <Border Grid.Row="1"
+                                Padding="20"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto,Auto"
+                                  RowSpacing="12">
+                                <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto'}"
+                                      RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
+                                      ColumnSpacing="16">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="Today"
+                                               Style="{StaticResource EyebrowLabel}" />
+                                        <Label Text="{Binding StatisticsTodaySummaryText}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="WordWrap" />
+                                        <Label Text="{Binding StatisticsTaskSummaryText}"
+                                               FontSize="13"
+                                               Style="{StaticResource SecondaryLabel}" />
+                                    </VerticalStackLayout>
+
+                                    <Border Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                            Grid.Column="{OnIdiom Phone=0, Desktop=1}"
+                                            Padding="14,10"
+                                            StrokeThickness="1"
+                                            Stroke="{AppThemeBinding Light=#E6CDB4, Dark=#4B372F}"
+                                            BackgroundColor="{AppThemeBinding Light=#BFFFF2E2, Dark=#663A2A24}"
+                                            VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="18" />
+                                        </Border.StrokeShape>
+                                        <VerticalStackLayout Spacing="0"
+                                                             HorizontalOptions="Center">
+                                            <Label Text="{Binding StatisticsCurrentStreakDisplay}"
+                                                   FontSize="24"
+                                                   FontAttributes="Bold"
+                                                   HorizontalTextAlignment="Center" />
+                                            <Label Text="{Binding StatisticsCurrentStreakLabel}"
+                                                   FontSize="11"
+                                                   Style="{StaticResource SecondaryLabel}"
+                                                   HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </Grid>
+
+                                <ProgressBar Grid.Row="1"
+                                             Progress="{Binding StatisticsTaskCompletionProgress}"
+                                             HeightRequest="7"
+                                             ProgressColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
+
+                                <Label Grid.Row="2"
+                                       Text="Task completion"
+                                       FontSize="12"
+                                       Style="{StaticResource SecondaryLabel}" />
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="2"
+                              ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,*'}"
+                              RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto,Auto', Desktop='Auto,Auto'}"
                               ColumnSpacing="14"
                               RowSpacing="14">
                             <Border Padding="20"
@@ -572,7 +656,8 @@
                                 </VerticalStackLayout>
                             </Border>
 
-                            <Border Grid.Column="1"
+                            <Border Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                    Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                     Padding="20"
                                     StrokeThickness="1"
                                     Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
@@ -581,44 +666,44 @@
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
                                 <VerticalStackLayout Spacing="6">
-                                    <Label Text="Completed sessions"
+                                    <Label Text="Sessions today"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="{Binding StatisticsTodaySessionsDisplay}"
+                                           FontSize="30"
+                                           FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border Grid.Row="{OnIdiom Phone=2, Desktop=1}"
+                                    Padding="20"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Active tasks"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="{Binding StatisticsActiveTasksDisplay}"
+                                           FontSize="30"
+                                           FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <Border Grid.Row="{OnIdiom Phone=3, Desktop=1}"
+                                    Grid.Column="{OnIdiom Phone=0, Desktop=1}"
+                                    Padding="20"
+                                    StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="All sessions"
                                            Style="{StaticResource EyebrowLabel}" />
                                     <Label Text="{Binding StatisticsCompletedSessionsDisplay}"
-                                           FontSize="30"
-                                           FontAttributes="Bold" />
-                                </VerticalStackLayout>
-                            </Border>
-
-                            <Border Grid.Row="1"
-                                    Padding="20"
-                                    StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <VerticalStackLayout Spacing="6">
-                                    <Label Text="Completed tasks"
-                                           Style="{StaticResource EyebrowLabel}" />
-                                    <Label Text="{Binding StatisticsCompletedTasksDisplay}"
-                                           FontSize="30"
-                                           FontAttributes="Bold" />
-                                </VerticalStackLayout>
-                            </Border>
-
-                            <Border Grid.Row="1"
-                                    Grid.Column="1"
-                                    Padding="20"
-                                    StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <VerticalStackLayout Spacing="6">
-                                    <Label Text="Current streak"
-                                           Style="{StaticResource EyebrowLabel}" />
-                                    <Label Text="{Binding StatisticsCurrentStreakDisplay}"
                                            FontSize="30"
                                            FontAttributes="Bold" />
                                 </VerticalStackLayout>
@@ -659,8 +744,10 @@
                                 <Label Text="Timer defaults"
                                        Style="{StaticResource EyebrowLabel}" />
                                 <Grid Grid.Row="1"
-                                      ColumnDefinitions="*,*"
-                                      ColumnSpacing="14">
+                                      ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,*'}"
+                                      RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
+                                      ColumnSpacing="14"
+                                      RowSpacing="14">
                                     <VerticalStackLayout Spacing="8">
                                         <Label Text="Focus duration"
                                                FontSize="13"
@@ -693,7 +780,8 @@
                                         </Grid>
                                     </VerticalStackLayout>
 
-                                    <VerticalStackLayout Grid.Column="1"
+                                    <VerticalStackLayout Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                                         Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                                          Spacing="8">
                                         <Label Text="Break duration"
                                                FontSize="13"
@@ -762,12 +850,15 @@
                             </Border.StrokeShape>
                             <Grid RowDefinitions="Auto,Auto"
                                   RowSpacing="12">
-                                <Grid ColumnDefinitions="*,Auto,Auto"
-                                      ColumnSpacing="24">
+                                <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto,Auto'}"
+                                      RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto', Desktop='Auto'}"
+                                      ColumnSpacing="24"
+                                      RowSpacing="8">
                                     <Label Text="Ambience defaults"
                                            Style="{StaticResource EyebrowLabel}"
                                            VerticalOptions="Center" />
-                                    <HorizontalStackLayout Grid.Column="1"
+                                    <HorizontalStackLayout Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                                           Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                                            Spacing="8"
                                                            VerticalOptions="Center">
                                         <Label Text="Rain"
@@ -776,7 +867,8 @@
                                                VerticalOptions="Center" />
                                         <Switch IsToggled="{Binding IsRainAmbienceEnabled}" />
                                     </HorizontalStackLayout>
-                                    <HorizontalStackLayout Grid.Column="2"
+                                    <HorizontalStackLayout Grid.Row="{OnIdiom Phone=2, Desktop=0}"
+                                                           Grid.Column="{OnIdiom Phone=0, Desktop=2}"
                                                            Spacing="8"
                                                            VerticalOptions="Center">
                                         <Label Text="Chill"
