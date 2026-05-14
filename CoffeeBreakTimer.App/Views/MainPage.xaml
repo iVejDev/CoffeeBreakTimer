@@ -627,6 +627,195 @@
                     </Grid>
                 </ScrollView>
 
+                <ScrollView x:Name="SettingsWorkspace"
+                            IsVisible="False"
+                            Opacity="0">
+                    <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowSpacing="14"
+                          MaximumWidthRequest="720"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Settings"
+                                   FontSize="{OnIdiom Phone=26, Desktop=32}"
+                                   FontAttributes="Bold"
+                                   LineBreakMode="NoWrap" />
+                            <Label Text="Small defaults for a calmer workspace."
+                                   FontSize="15"
+                                   Style="{StaticResource SecondaryLabel}" />
+                        </VerticalStackLayout>
+
+                        <Border Grid.Row="1"
+                                Padding="18"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  RowSpacing="12">
+                                <Label Text="Timer defaults"
+                                       Style="{StaticResource EyebrowLabel}" />
+                                <Grid Grid.Row="1"
+                                      ColumnDefinitions="*,*"
+                                      ColumnSpacing="14">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="Focus duration"
+                                               FontSize="13"
+                                               Style="{StaticResource SecondaryLabel}" />
+                                        <Grid ColumnDefinitions="*,*"
+                                              ColumnSpacing="8">
+                                            <Grid ColumnDefinitions="*,Auto"
+                                                  ColumnSpacing="4">
+                                                <Entry Text="{Binding WorkHoursText, Mode=TwoWay}"
+                                                       IsEnabled="{Binding IsDurationEditingEnabled}"
+                                                       Style="{StaticResource DurationEntry}" />
+                                                <Label Grid.Column="1"
+                                                       Text="h"
+                                                       FontSize="13"
+                                                       Style="{StaticResource SecondaryLabel}"
+                                                       VerticalOptions="Center" />
+                                            </Grid>
+                                            <Grid Grid.Column="1"
+                                                  ColumnDefinitions="*,Auto"
+                                                  ColumnSpacing="4">
+                                                <Entry Text="{Binding WorkRemainingMinutesText, Mode=TwoWay}"
+                                                       IsEnabled="{Binding IsDurationEditingEnabled}"
+                                                       Style="{StaticResource DurationEntry}" />
+                                                <Label Grid.Column="1"
+                                                       Text="min"
+                                                       FontSize="13"
+                                                       Style="{StaticResource SecondaryLabel}"
+                                                       VerticalOptions="Center" />
+                                            </Grid>
+                                        </Grid>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Spacing="8">
+                                        <Label Text="Break duration"
+                                               FontSize="13"
+                                               Style="{StaticResource SecondaryLabel}" />
+                                        <Grid ColumnDefinitions="*,*"
+                                              ColumnSpacing="8">
+                                            <Grid ColumnDefinitions="*,Auto"
+                                                  ColumnSpacing="4">
+                                                <Entry Text="{Binding BreakHoursText, Mode=TwoWay}"
+                                                       IsEnabled="{Binding IsDurationEditingEnabled}"
+                                                       Style="{StaticResource DurationEntry}" />
+                                                <Label Grid.Column="1"
+                                                       Text="h"
+                                                       FontSize="13"
+                                                       Style="{StaticResource SecondaryLabel}"
+                                                       VerticalOptions="Center" />
+                                            </Grid>
+                                            <Grid Grid.Column="1"
+                                                  ColumnDefinitions="*,Auto"
+                                                  ColumnSpacing="4">
+                                                <Entry Text="{Binding BreakRemainingMinutesText, Mode=TwoWay}"
+                                                       IsEnabled="{Binding IsDurationEditingEnabled}"
+                                                       Style="{StaticResource DurationEntry}" />
+                                                <Label Grid.Column="1"
+                                                       Text="min"
+                                                       FontSize="13"
+                                                       Style="{StaticResource SecondaryLabel}"
+                                                       VerticalOptions="Center" />
+                                            </Grid>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="2"
+                                Padding="18"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Grid ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto"
+                                  RowSpacing="8">
+                                <Label Text="Notification sounds"
+                                       Style="{StaticResource EyebrowLabel}" />
+                                <Switch Grid.Column="1"
+                                        IsToggled="{Binding NotificationSoundsEnabled}" />
+                                <Label Grid.Row="1"
+                                       Grid.ColumnSpan="2"
+                                       Text="Play a soft voice cue when focus or break ends."
+                                       FontSize="13"
+                                       Style="{StaticResource SecondaryLabel}" />
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="3"
+                                Padding="18"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto"
+                                  RowSpacing="12">
+                                <Grid ColumnDefinitions="*,Auto,Auto"
+                                      ColumnSpacing="24">
+                                    <Label Text="Ambience defaults"
+                                           Style="{StaticResource EyebrowLabel}"
+                                           VerticalOptions="Center" />
+                                    <HorizontalStackLayout Grid.Column="1"
+                                                           Spacing="8"
+                                                           VerticalOptions="Center">
+                                        <Label Text="Rain"
+                                               FontSize="13"
+                                               Style="{StaticResource SecondaryLabel}"
+                                               VerticalOptions="Center" />
+                                        <Switch IsToggled="{Binding IsRainAmbienceEnabled}" />
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="2"
+                                                           Spacing="8"
+                                                           VerticalOptions="Center">
+                                        <Label Text="Chill"
+                                               FontSize="13"
+                                               Style="{StaticResource SecondaryLabel}"
+                                               VerticalOptions="Center" />
+                                        <Switch IsToggled="{Binding IsChillAmbienceEnabled}" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+
+                                <Grid Grid.Row="1"
+                                      ColumnDefinitions="Auto,*,Auto"
+                                      ColumnSpacing="12">
+                                    <Label Text="Volume"
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}"
+                                           VerticalOptions="Center" />
+                                    <Slider Grid.Column="1"
+                                            Minimum="0"
+                                            Maximum="1"
+                                            HeightRequest="38"
+                                            Value="{Binding AmbienceVolume, Mode=TwoWay}"
+                                            MinimumTrackColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}"
+                                            MaximumTrackColor="{AppThemeBinding Light=#DDC4AA, Dark=#59433A}"
+                                            ThumbColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding AmbienceVolumeDisplay}"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           MinimumWidthRequest="42"
+                                           HorizontalTextAlignment="End"
+                                           VerticalOptions="Center"
+                                           Style="{StaticResource SecondaryLabel}" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ScrollView>
+
                 <Border x:Name="PlaceholderWorkspace"
                         IsVisible="False"
                         Opacity="0"

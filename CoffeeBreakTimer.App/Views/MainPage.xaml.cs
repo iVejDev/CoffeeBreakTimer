@@ -97,6 +97,7 @@ public partial class MainPage : ContentPage
         {
             TasksWorkspace.IsVisible = false;
             StatisticsWorkspace.IsVisible = false;
+            SettingsWorkspace.IsVisible = false;
             PlaceholderWorkspace.IsVisible = false;
             FocusWorkspace.IsVisible = true;
             await FocusWorkspace.FadeTo(1, 180, Easing.CubicOut);
@@ -108,6 +109,7 @@ public partial class MainPage : ContentPage
             await FocusWorkspace.FadeTo(0, 140, Easing.CubicOut);
             FocusWorkspace.IsVisible = false;
             StatisticsWorkspace.IsVisible = false;
+            SettingsWorkspace.IsVisible = false;
             PlaceholderWorkspace.IsVisible = false;
             TasksWorkspace.Opacity = 0;
             TasksWorkspace.IsVisible = true;
@@ -120,6 +122,7 @@ public partial class MainPage : ContentPage
             await FocusWorkspace.FadeTo(0, 140, Easing.CubicOut);
             FocusWorkspace.IsVisible = false;
             TasksWorkspace.IsVisible = false;
+            SettingsWorkspace.IsVisible = false;
             PlaceholderWorkspace.IsVisible = false;
             StatisticsWorkspace.Opacity = 0;
             StatisticsWorkspace.IsVisible = true;
@@ -127,9 +130,21 @@ public partial class MainPage : ContentPage
             return;
         }
 
+        if (section == WorkspaceSection.Settings)
+        {
+            await FocusWorkspace.FadeTo(0, 140, Easing.CubicOut);
+            FocusWorkspace.IsVisible = false;
+            TasksWorkspace.IsVisible = false;
+            StatisticsWorkspace.IsVisible = false;
+            PlaceholderWorkspace.IsVisible = false;
+            SettingsWorkspace.Opacity = 0;
+            SettingsWorkspace.IsVisible = true;
+            await SettingsWorkspace.FadeTo(1, 180, Easing.CubicIn);
+            return;
+        }
+
         PlaceholderTitle.Text = section switch
         {
-            WorkspaceSection.Settings => "Settings",
             _ => "Focus"
         };
         PlaceholderSubtitle.Text = "Coming next";
@@ -138,6 +153,7 @@ public partial class MainPage : ContentPage
         FocusWorkspace.IsVisible = false;
         TasksWorkspace.IsVisible = false;
         StatisticsWorkspace.IsVisible = false;
+        SettingsWorkspace.IsVisible = false;
         PlaceholderWorkspace.Opacity = 0;
         PlaceholderWorkspace.IsVisible = true;
         await PlaceholderWorkspace.FadeTo(1, 180, Easing.CubicIn);

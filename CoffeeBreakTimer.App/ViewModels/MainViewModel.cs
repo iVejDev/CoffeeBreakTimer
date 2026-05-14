@@ -12,12 +12,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly CoffeeTimerService _timerService;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly IAppPreferencesRepository _appPreferencesRepository;
+    private readonly IAudioPlayer _audioPlayer;
     private readonly IAmbiencePlayer _ambiencePlayer;
     private readonly ITaskRepository _taskRepository;
     private readonly IStatisticsRepository _statisticsRepository;
     private readonly CancellationTokenSource _quoteRotationTokenSource = new();
     private readonly List<FocusSessionRecord> _focusSessionRecords = [];
     private bool _isLoadingSettings;
+    private bool _isLoadingAppPreferences;
     private bool _isUpdatingDurationText;
     private bool _focusCompletionRecorded;
     private bool _disposed;
@@ -92,6 +95,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private bool isChillAmbienceEnabled;
 
     [ObservableProperty]
+    private bool notificationSoundsEnabled = true;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AmbienceVolumeDisplay))]
     private double ambienceVolume = 0.55;
 
@@ -112,19 +118,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public MainViewModel(
         CoffeeTimerService timerService,
         ISettingsRepository settingsRepository,
+        IAppPreferencesRepository appPreferencesRepository,
+        IAudioPlayer audioPlayer,
         IAmbiencePlayer ambiencePlayer,
         ITaskRepository taskRepository,
         IStatisticsRepository statisticsRepository)
     {
         _timerService = timerService;
         _settingsRepository = settingsRepository;
+        _appPreferencesRepository = appPreferencesRepository;
+        _audioPlayer = audioPlayer;
         _ambiencePlayer = ambiencePlayer;
         _taskRepository = taskRepository;
         _statisticsRepository = statisticsRepository;
 
         _timerService.StateChanged += OnTimerStateChanged;
-        _ambiencePlayer.SetVolume(AmbienceVolume);
         LoadSettings();
+        LoadAppPreferences();
         ApplySnapshot(_timerService.CurrentSnapshot);
         _ = LoadTasksAsync();
         _ = LoadStatisticsAsync();
@@ -349,16 +359,25 @@ public partial class MainViewModel : ObservableObject, IDisposable
     partial void OnIsRainAmbienceEnabledChanged(bool value)
     {
         _ambiencePlayer.SetEnabled(AmbienceTrack.Rain, value);
+        PersistAppPreferences();
     }
 
     partial void OnIsChillAmbienceEnabledChanged(bool value)
     {
         _ambiencePlayer.SetEnabled(AmbienceTrack.Chill, value);
+        PersistAppPreferences();
+    }
+
+    partial void OnNotificationSoundsEnabledChanged(bool value)
+    {
+        _audioPlayer.IsEnabled = value;
+        PersistAppPreferences();
     }
 
     partial void OnAmbienceVolumeChanged(double value)
     {
         _ambiencePlayer.SetVolume(value);
+        PersistAppPreferences();
     }
 
     private void LoadSettings()
@@ -373,6 +392,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _isLoadingSettings = false;
     }
 
+    private void LoadAppPreferences()
+    {
+        _isLoadingAppPreferences = true;
+
+        var preferences = _appPreferencesRepository.Load();
+        NotificationSoundsEnabled = preferences.NotificationSoundsEnabled;
+        AmbienceVolume = preferences.AmbienceVolume;
+        IsRainAmbienceEnabled = preferences.RainAmbienceEnabled;
+        IsChillAmbienceEnabled = preferences.ChillAmbienceEnabled;
+
+        _audioPlayer.IsEnabled = NotificationSoundsEnabled;
+        _ambiencePlayer.SetVolume(AmbienceVolume);
+        _ambiencePlayer.SetEnabled(AmbienceTrack.Rain, IsRainAmbienceEnabled);
+        _ambiencePlayer.SetEnabled(AmbienceTrack.Chill, IsChillAmbienceEnabled);
+
+        _isLoadingAppPreferences = false;
+    }
+
     private void PersistSettings()
     {
         if (_isLoadingSettings)
@@ -383,6 +420,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var settings = CreateSettings();
         _settingsRepository.Save(settings);
         _timerService.UpdateSettings(settings);
+    }
+
+    private void PersistAppPreferences()
+    {
+        if (_isLoadingAppPreferences)
+        {
+            return;
+        }
+
+        _appPreferencesRepository.Save(new AppPreferences
+        {
+            NotificationSoundsEnabled = NotificationSoundsEnabled,
+            RainAmbienceEnabled = IsRainAmbienceEnabled,
+            ChillAmbienceEnabled = IsChillAmbienceEnabled,
+            AmbienceVolume = AmbienceVolume
+        });
     }
 
     private TimerSettings CreateSettings() => new()

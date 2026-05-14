@@ -14,6 +14,7 @@ public static class ServiceRegistration
         builder.Services.AddSingleton<IAudioPlayer, MauiAudioPlayer>();
         builder.Services.AddSingleton<IAmbiencePlayer, MauiAmbiencePlayer>();
         builder.Services.AddSingleton<ISettingsRepository, PreferencesSettingsRepository>();
+        builder.Services.AddSingleton<IAppPreferencesRepository, PreferencesAppPreferencesRepository>();
         builder.Services.AddSingleton<ITaskRepository, JsonTaskRepository>();
         builder.Services.AddSingleton<IStatisticsRepository, JsonStatisticsRepository>();
         builder.Services.AddSingleton<CoffeeTimerService>();

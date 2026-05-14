@@ -37,8 +37,15 @@ public sealed class MauiAudioPlayer : IAudioPlayer
     private static readonly List<MediaPlayer> ActivePlayers = [];
 #endif
 
+    public bool IsEnabled { get; set; } = true;
+
     public void Play(string soundName)
     {
+        if (!IsEnabled)
+        {
+            return;
+        }
+
         var sound = ResolveSound(soundName);
 
 #if WINDOWS
