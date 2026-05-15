@@ -420,7 +420,7 @@
                             IsVisible="False"
                             Opacity="0">
                     <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                           RowSpacing="14"
                           MaximumWidthRequest="720"
                           HorizontalOptions="Center"
@@ -517,8 +517,10 @@
                                                 </Border.StrokeShape>
                                                 <Grid>
                                                     <Grid IsVisible="{Binding IsNotEditing}"
-                                                          ColumnDefinitions="Auto,*,Auto"
-                                                          ColumnSpacing="12">
+                                                          ColumnDefinitions="{OnIdiom Phone='Auto,*', Desktop='Auto,*,Auto'}"
+                                                          RowDefinitions="{OnIdiom Phone='Auto,Auto', Desktop='Auto'}"
+                                                          ColumnSpacing="12"
+                                                          RowSpacing="10">
                                                         <Button Text="{Binding CompletionMark}"
                                                                 Command="{Binding ToggleCommand}"
                                                                 WidthRequest="34"
@@ -540,8 +542,10 @@
                                                                    FontSize="13"
                                                                    Style="{StaticResource SecondaryLabel}" />
                                                         </VerticalStackLayout>
-                                                        <HorizontalStackLayout Grid.Column="2"
+                                                        <HorizontalStackLayout Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                                                               Grid.Column="{OnIdiom Phone=1, Desktop=2}"
                                                                                Spacing="8"
+                                                                               HorizontalOptions="{OnIdiom Phone=Start, Desktop=End}"
                                                                                VerticalOptions="Center">
                                                             <Button Text="Edit"
                                                                     Command="{Binding BeginEditCommand}"
@@ -557,8 +561,8 @@
                                                     </Grid>
 
                                                     <Grid IsVisible="{Binding IsEditing}"
-                                                          ColumnDefinitions="*,Auto"
-                                                          RowDefinitions="Auto,Auto"
+                                                          ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto'}"
+                                                          RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto', Desktop='Auto,Auto'}"
                                                           ColumnSpacing="10"
                                                           RowSpacing="10">
                                                         <Entry Text="{Binding EditTitle, Mode=TwoWay}"
@@ -566,7 +570,8 @@
                                                                BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
                                                                TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
                                                                PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
-                                                        <Entry Grid.Column="1"
+                                                        <Entry Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                                               Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                                                Text="{Binding EditEstimatedSessionsText, Mode=TwoWay}"
                                                                Placeholder="Sessions"
                                                                Keyboard="Numeric"
@@ -575,7 +580,7 @@
                                                                BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
                                                                TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
                                                                PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
-                                                        <HorizontalStackLayout Grid.Row="1"
+                                                        <HorizontalStackLayout Grid.Row="{OnIdiom Phone=2, Desktop=1}"
                                                                                Grid.ColumnSpan="2"
                                                                                Spacing="8"
                                                                                HorizontalOptions="End">
@@ -604,7 +609,7 @@
                             IsVisible="False"
                             Opacity="0">
                     <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                          RowDefinitions="Auto,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto"
                           RowSpacing="14"
                           MaximumWidthRequest="720"
                           HorizontalOptions="Center"
@@ -770,6 +775,7 @@
 
                                 <VerticalStackLayout Grid.Row="1"
                                                      IsVisible="{Binding HasNoRecentFocusSessions}"
+                                                     MinimumHeightRequest="48"
                                                      Spacing="4">
                                     <Label Text="No focus history yet"
                                            FontSize="15"
@@ -1027,6 +1033,57 @@
                                            VerticalOptions="Center"
                                            Style="{StaticResource SecondaryLabel}" />
                                 </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="4"
+                                Padding="18"
+                                StrokeThickness="1"
+                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
+                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Grid RowDefinitions="Auto,Auto,Auto"
+                                  RowSpacing="10">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Data management"
+                                           Style="{StaticResource EyebrowLabel}" />
+                                    <Label Text="Light cleanup tools for local tasks, statistics, and preferences."
+                                           FontSize="13"
+                                           Style="{StaticResource SecondaryLabel}" />
+                                </VerticalStackLayout>
+
+                                <Grid Grid.Row="1"
+                                      ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,*,*'}"
+                                      RowDefinitions="{OnIdiom Phone='Auto,Auto,Auto', Desktop='Auto'}"
+                                      ColumnSpacing="10"
+                                      RowSpacing="10">
+                                    <Button Text="Clear done tasks"
+                                            Command="{Binding ClearCompletedTasksCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="14,10"
+                                            FontSize="12" />
+                                    <Button Grid.Row="{OnIdiom Phone=1, Desktop=0}"
+                                            Grid.Column="{OnIdiom Phone=0, Desktop=1}"
+                                            Text="Reset statistics"
+                                            Command="{Binding ResetStatisticsCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="14,10"
+                                            FontSize="12" />
+                                    <Button Grid.Row="{OnIdiom Phone=2, Desktop=0}"
+                                            Grid.Column="{OnIdiom Phone=0, Desktop=2}"
+                                            Text="Reset preferences"
+                                            Command="{Binding ResetAppPreferencesCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Padding="14,10"
+                                            FontSize="12" />
+                                </Grid>
+
+                                <Label Grid.Row="2"
+                                       Text="All data is stored locally on this device."
+                                       FontSize="12"
+                                       Style="{StaticResource SecondaryLabel}" />
                             </Grid>
                         </Border>
                     </Grid>

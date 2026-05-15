@@ -16,6 +16,7 @@ x86/
 ## Visual Studio cache/options
 .vscode/
 *.cachefile
+*.lscache
 *.VC.db
 *.VC.opendb
 

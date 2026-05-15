@@ -2,6 +2,7 @@ using CoffeeBreakTimer.Core.Domain;
 using CoffeeBreakTimer.Core.Domain.Enums;
 using CoffeeBreakTimer.Core.Interfaces;
 using CoffeeBreakTimer.Core.Services;
+using CoffeeBreakTimer.App.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IAmbiencePlayer _ambiencePlayer;
     private readonly ITaskRepository _taskRepository;
     private readonly IStatisticsRepository _statisticsRepository;
+    private readonly IUserDialogService _dialogs;
     private readonly CancellationTokenSource _quoteRotationTokenSource = new();
     private readonly List<FocusSessionRecord> _focusSessionRecords = [];
     private bool _isLoadingSettings;
@@ -127,7 +129,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IAudioPlayer audioPlayer,
         IAmbiencePlayer ambiencePlayer,
         ITaskRepository taskRepository,
-        IStatisticsRepository statisticsRepository)
+        IStatisticsRepository statisticsRepository,
+        IUserDialogService dialogs)
     {
         _timerService = timerService;
         _settingsRepository = settingsRepository;
@@ -136,6 +139,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _ambiencePlayer = ambiencePlayer;
         _taskRepository = taskRepository;
         _statisticsRepository = statisticsRepository;
+        _dialogs = dialogs;
 
         _timerService.StateChanged += OnTimerStateChanged;
         LoadSettings();
@@ -206,6 +210,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         : "No tasks";
 
     public bool CanClearFocusTask => SelectedFocusTask is not null;
+
+    public bool CanClearCompletedTasks => Tasks.Any(task => task.IsCompleted);
+
+    public bool CanResetStatistics => _focusSessionRecords.Count > 0;
 
     public string StatisticsFocusTimeTodayDisplay
     {
@@ -360,6 +368,88 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         RefreshTaskState();
         await SaveTasksAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanClearCompletedTasks))]
+    private async Task ClearCompletedTasksAsync()
+    {
+        var confirmed = await _dialogs.ConfirmAsync(
+            "Clear completed tasks?",
+            "Completed tasks will be removed from your local task list. Active tasks will stay.",
+            "Clear",
+            "Cancel");
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        var completedTasks = Tasks
+            .Where(task => task.IsCompleted)
+            .ToList();
+
+        foreach (var task in completedTasks)
+        {
+            Tasks.Remove(task);
+        }
+
+        if (SelectedFocusTask is not null && !Tasks.Contains(SelectedFocusTask))
+        {
+            SelectedFocusTask = null;
+        }
+
+        RefreshTaskState();
+        await SaveTasksAsync();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanResetStatistics))]
+    private async Task ResetStatisticsAsync()
+    {
+        var confirmed = await _dialogs.ConfirmAsync(
+            "Reset statistics?",
+            "This clears your local focus history and statistics. Your tasks will stay.",
+            "Reset",
+            "Cancel");
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        _focusSessionRecords.Clear();
+        await _statisticsRepository.SaveFocusSessionsAsync(_focusSessionRecords);
+        RefreshSessionHistory();
+        RefreshStatisticsState();
+    }
+
+    [RelayCommand]
+    private async Task ResetAppPreferencesAsync()
+    {
+        var confirmed = await _dialogs.ConfirmAsync(
+            "Reset preferences?",
+            "Notification and ambience settings will return to their default values.",
+            "Reset",
+            "Cancel");
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        _isLoadingAppPreferences = true;
+
+        NotificationSoundsEnabled = true;
+        IsRainAmbienceEnabled = false;
+        IsChillAmbienceEnabled = false;
+        AmbienceVolume = 0.55;
+
+        _isLoadingAppPreferences = false;
+
+        _audioPlayer.IsEnabled = NotificationSoundsEnabled;
+        _ambiencePlayer.SetVolume(AmbienceVolume);
+        _ambiencePlayer.SetEnabled(AmbienceTrack.Rain, IsRainAmbienceEnabled);
+        _ambiencePlayer.SetEnabled(AmbienceTrack.Chill, IsChillAmbienceEnabled);
+        PersistAppPreferences();
     }
 
     private async Task SaveEditedTaskAsync(FocusTaskItemViewModel task)
@@ -630,6 +720,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(SelectedFocusTaskProgressText));
         OnPropertyChanged(nameof(FocusTaskPickerTitle));
         OnPropertyChanged(nameof(CanClearFocusTask));
+        OnPropertyChanged(nameof(CanClearCompletedTasks));
+        ClearCompletedTasksCommand.NotifyCanExecuteChanged();
         RefreshStatisticsState();
     }
 
@@ -702,6 +794,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(StatisticsTaskSummaryText));
         OnPropertyChanged(nameof(HasRecentFocusSessions));
         OnPropertyChanged(nameof(HasNoRecentFocusSessions));
+        OnPropertyChanged(nameof(CanResetStatistics));
+        ResetStatisticsCommand.NotifyCanExecuteChanged();
     }
 
     private int CalculateCurrentStreak()
