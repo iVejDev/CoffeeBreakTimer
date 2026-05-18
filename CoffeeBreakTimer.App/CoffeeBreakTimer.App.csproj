@@ -14,7 +14,7 @@
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
 		<ApplicationTitle>CoffeeBreakerTimer</ApplicationTitle>
-		<ApplicationId>com.companyname.coffeebreakertimer</ApplicationId>
+		<ApplicationId>com.coffeebreakertimer.app</ApplicationId>
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 		<WindowsPackageType>None</WindowsPackageType>
