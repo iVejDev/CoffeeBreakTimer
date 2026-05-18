@@ -16,6 +16,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IAppPreferencesRepository _appPreferencesRepository;
     private readonly IAudioPlayer _audioPlayer;
     private readonly IAmbiencePlayer _ambiencePlayer;
+    private readonly INotificationService _notificationService;
     private readonly ITaskRepository _taskRepository;
     private readonly IStatisticsRepository _statisticsRepository;
     private readonly IUserDialogService _dialogs;
@@ -128,6 +129,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IAppPreferencesRepository appPreferencesRepository,
         IAudioPlayer audioPlayer,
         IAmbiencePlayer ambiencePlayer,
+        INotificationService notificationService,
         ITaskRepository taskRepository,
         IStatisticsRepository statisticsRepository,
         IUserDialogService dialogs)
@@ -137,6 +139,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _appPreferencesRepository = appPreferencesRepository;
         _audioPlayer = audioPlayer;
         _ambiencePlayer = ambiencePlayer;
+        _notificationService = notificationService;
         _taskRepository = taskRepository;
         _statisticsRepository = statisticsRepository;
         _dialogs = dialogs;
@@ -340,6 +343,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void ClearFocusTask()
     {
         SelectedFocusTask = null;
+    }
+
+    [RelayCommand]
+    private Task TestNotificationAsync()
+    {
+        return _notificationService.ShowSessionCompletedAsync(SessionType.Work);
     }
 
     [RelayCommand(CanExecute = nameof(CanApplyTimerPreset))]
@@ -824,6 +833,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private static string FormatTime(TimeSpan time)
     {
+        if (time.TotalHours >= 1)
+        {
+            return $"{(int)time.TotalHours}h {time.Minutes:00}m";
+        }
+
         var totalMinutes = (int)time.TotalMinutes;
         return $"{totalMinutes:00}:{time.Seconds:00}";
     }

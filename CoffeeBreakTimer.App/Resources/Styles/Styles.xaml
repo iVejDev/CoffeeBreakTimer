@@ -85,6 +85,63 @@
         <Setter Property="HeightRequest" Value="42" />
     </Style>
 
+    <Style x:Key="CozyEntry" TargetType="Entry">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}" />
+        <Setter Property="PlaceholderColor"
+                Value="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+    </Style>
+
+    <Style x:Key="CozyPanelBase" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke"
+                Value="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="8" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CozyWarmPanel" TargetType="Border" BasedOn="{StaticResource CozyPanelBase}">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}" />
+    </Style>
+
+    <Style x:Key="CozySoftPanel" TargetType="Border" BasedOn="{StaticResource CozyPanelBase}">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}" />
+    </Style>
+
+    <Style x:Key="CozyItemPanel" TargetType="Border" BasedOn="{StaticResource CozyPanelBase}">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light=#CFFFF7EC, Dark=#9A2A211D}" />
+    </Style>
+
+    <Style x:Key="CozyWarmPanelWithShadow" TargetType="Border" BasedOn="{StaticResource CozyWarmPanel}">
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#241006"
+                        Offset="0,10"
+                        Radius="20"
+                        Opacity="0.16" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CozySoftPanelWithShadow" TargetType="Border" BasedOn="{StaticResource CozySoftPanel}">
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#241006"
+                        Offset="0,10"
+                        Radius="20"
+                        Opacity="0.16" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="Stepper">
         <Setter Property="Minimum" Value="1" />
         <Setter Property="Maximum" Value="240" />

@@ -1,8 +1,43 @@
 <svg width="456" height="456" viewBox="0 0 456 456" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="456" height="456" fill="#2F7D7E"/>
-  <path d="M142 176H282V282C282 315.137 255.137 342 222 342H202C168.863 342 142 315.137 142 282V176Z" fill="#F7FAFC"/>
-  <path d="M282 202H312C338.51 202 360 223.49 360 250C360 276.51 338.51 298 312 298H282" stroke="#F7FAFC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M174 138C174 118 194 118 194 98" stroke="#68D2C4" stroke-width="16" stroke-linecap="round"/>
-  <path d="M232 138C232 118 252 118 252 98" stroke="#68D2C4" stroke-width="16" stroke-linecap="round"/>
-  <path d="M168 230H260V282C260 304.091 242.091 322 220 322H208C185.909 322 168 304.091 168 282V230Z" fill="#8B5A2B"/>
+  <defs>
+    <linearGradient id="bg" x1="78" y1="44" x2="386" y2="414" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#392219"/>
+      <stop offset="0.62" stop-color="#211410"/>
+      <stop offset="1" stop-color="#140B09"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(228 256) rotate(90) scale(162 180)">
+      <stop stop-color="#D99B62" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#D99B62" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ceramic" x1="130" y1="150" x2="304" y2="340" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4E1"/>
+      <stop offset="0.48" stop-color="#F3C999"/>
+      <stop offset="1" stop-color="#D99B62"/>
+    </linearGradient>
+    <linearGradient id="coffee" x1="151" y1="226" x2="286" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C9874D"/>
+      <stop offset="0.62" stop-color="#8B4A23"/>
+      <stop offset="1" stop-color="#4F2112"/>
+    </linearGradient>
+    <filter id="shadow" x="92" y="126" width="286" height="258" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#120806" flood-opacity="0.42"/>
+    </filter>
+  </defs>
+  <rect width="456" height="456" fill="url(#bg)"/>
+  <circle cx="228" cy="256" r="172" fill="url(#halo)"/>
+  <ellipse cx="224" cy="343" rx="105" ry="18" fill="#130807" fill-opacity="0.34"/>
+  <g filter="url(#shadow)">
+    <path d="M130 178H292V284C292 319.899 262.899 349 227 349H195C159.101 349 130 319.899 130 284V178Z" fill="url(#ceramic)"/>
+    <path d="M292 210H319C348.271 210 372 233.729 372 263C372 292.271 348.271 316 319 316H292" stroke="#E8AF72" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M292 230H317C335.225 230 350 244.775 350 263C350 281.225 335.225 296 317 296H292" stroke="#281510" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="211" cy="180" rx="91" ry="28" fill="#F3C999"/>
+    <ellipse cx="211" cy="183" rx="70" ry="15" fill="#8A5B38" fill-opacity="0.28"/>
+    <path d="M152 211C169 220 254 221 276 211V276C276 304.719 252.719 328 224 328H204C175.281 328 152 304.719 152 276V211Z" fill="url(#coffee)"/>
+    <path d="M157 211C177 222 255 222 276 211" stroke="#D79B61" stroke-width="9" stroke-linecap="round"/>
+    <path d="M177 205C196 199 231 200 252 204" stroke="#F1C18B" stroke-width="7" stroke-linecap="round" opacity="0.82"/>
+    <path d="M172 175C190 166 239 166 263 174" stroke="#FFF7E9" stroke-width="8" stroke-linecap="round" opacity="0.86"/>
+  </g>
+  <path d="M164 135C149 108 184 107 171 80" stroke="#F7DFC8" stroke-width="13" stroke-linecap="round" opacity="0.56"/>
+  <path d="M224 134C210 102 249 102 236 70" stroke="#F7DFC8" stroke-width="13" stroke-linecap="round" opacity="0.62"/>
+  <path d="M282 140C268 114 301 112 288 88" stroke="#F7DFC8" stroke-width="12" stroke-linecap="round" opacity="0.48"/>
 </svg>

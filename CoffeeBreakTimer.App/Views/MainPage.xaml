@@ -226,18 +226,7 @@
                       ColumnDefinitions="*,*"
                       ColumnSpacing="14">
                     <Border Padding="14"
-                            StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                            BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Brush="#241006"
-                                    Offset="0,10"
-                                    Radius="20"
-                                    Opacity="0.16" />
-                        </Border.Shadow>
+                            Style="{StaticResource CozySoftPanelWithShadow}">
                         <Grid RowDefinitions="Auto,Auto,Auto"
                               RowSpacing="10">
                             <Label Text="Focus duration"
@@ -274,18 +263,7 @@
 
                     <Border Grid.Column="1"
                             Padding="14"
-                            StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                            BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Border.Shadow>
-                            <Shadow Brush="#241006"
-                                    Offset="0,10"
-                                    Radius="20"
-                                    Opacity="0.16" />
-                        </Border.Shadow>
+                            Style="{StaticResource CozySoftPanelWithShadow}">
                         <Grid RowDefinitions="Auto,Auto,Auto"
                               RowSpacing="10">
                             <Label Text="Break duration"
@@ -437,18 +415,7 @@
 
                         <Border Grid.Row="1"
                                 Padding="{OnIdiom Phone='18,16', Desktop='22,18'}"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
-                            <Border.Shadow>
-                                <Shadow Brush="#241006"
-                                        Offset="0,10"
-                                        Radius="20"
-                                        Opacity="0.16" />
-                            </Border.Shadow>
+                                Style="{StaticResource CozyWarmPanelWithShadow}">
 
                             <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto,Auto'}"
                                   ColumnSpacing="10"
@@ -457,9 +424,7 @@
                                 <Entry Text="{Binding NewTaskTitle, Mode=TwoWay}"
                                        Placeholder="What are you focusing on?"
                                        ReturnType="Done"
-                                       BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
-                                       TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
-                                       PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+                                       Style="{StaticResource CozyEntry}" />
                                 <Entry Grid.Row="{OnIdiom Phone=1, Desktop=0}"
                                        Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                        Text="{Binding NewTaskEstimatedSessionsText, Mode=TwoWay}"
@@ -467,9 +432,7 @@
                                        Keyboard="Numeric"
                                        WidthRequest="96"
                                        HorizontalTextAlignment="Center"
-                                       BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
-                                       TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
-                                       PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+                                       Style="{StaticResource CozyEntry}" />
                                 <Button Grid.Row="{OnIdiom Phone=2, Desktop=0}"
                                         Grid.Column="{OnIdiom Phone=0, Desktop=2}"
                                         Text="Add"
@@ -480,12 +443,7 @@
 
                         <Border Grid.Row="2"
                                 Padding="{OnIdiom Phone='10,8', Desktop='12,10'}"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozySoftPanel}">
 
                             <Grid>
                                 <VerticalStackLayout IsVisible="{Binding HasNoTasks}"
@@ -509,12 +467,7 @@
                                         <DataTemplate x:DataType="viewModels:FocusTaskItemViewModel">
                                             <Border Padding="12"
                                                     Margin="0,4"
-                                                    StrokeThickness="1"
-                                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                                    BackgroundColor="{AppThemeBinding Light=#CFFFF7EC, Dark=#9A2A211D}">
-                                                <Border.StrokeShape>
-                                                    <RoundRectangle CornerRadius="8" />
-                                                </Border.StrokeShape>
+                                                    Style="{StaticResource CozyItemPanel}">
                                                 <Grid>
                                                     <Grid IsVisible="{Binding IsNotEditing}"
                                                           ColumnDefinitions="{OnIdiom Phone='Auto,*', Desktop='Auto,*,Auto'}"
@@ -567,9 +520,7 @@
                                                           RowSpacing="10">
                                                         <Entry Text="{Binding EditTitle, Mode=TwoWay}"
                                                                Placeholder="Task title"
-                                                               BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
-                                                               TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
-                                                               PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+                                                               Style="{StaticResource CozyEntry}" />
                                                         <Entry Grid.Row="{OnIdiom Phone=1, Desktop=0}"
                                                                Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                                                Text="{Binding EditEstimatedSessionsText, Mode=TwoWay}"
@@ -577,9 +528,7 @@
                                                                Keyboard="Numeric"
                                                                WidthRequest="96"
                                                                HorizontalTextAlignment="Center"
-                                                               BackgroundColor="{AppThemeBinding Light=#F9E9D7, Dark=#3A2A24}"
-                                                               TextColor="{AppThemeBinding Light=#3E281D, Dark=#FFF3E5}"
-                                                               PlaceholderColor="{AppThemeBinding Light=#8D6B58, Dark=#BDA89B}" />
+                                                               Style="{StaticResource CozyEntry}" />
                                                         <HorizontalStackLayout Grid.Row="{OnIdiom Phone=2, Desktop=1}"
                                                                                Grid.ColumnSpan="2"
                                                                                Spacing="8"
@@ -609,7 +558,7 @@
                             IsVisible="False"
                             Opacity="0">
                     <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                           RowSpacing="14"
                           MaximumWidthRequest="720"
                           HorizontalOptions="Center"
@@ -626,12 +575,7 @@
 
                         <Border Grid.Row="1"
                                 Padding="20"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozySoftPanel}">
                             <Grid RowDefinitions="Auto,Auto,Auto"
                                   RowSpacing="12">
                                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto'}"
@@ -691,12 +635,7 @@
                               ColumnSpacing="14"
                               RowSpacing="14">
                             <Border Padding="20"
-                                    StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                    BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
+                                    Style="{StaticResource CozySoftPanel}">
                                 <VerticalStackLayout Spacing="6">
                                     <Label Text="Focus time today"
                                            Style="{StaticResource EyebrowLabel}" />
@@ -709,12 +648,7 @@
                             <Border Grid.Row="{OnIdiom Phone=1, Desktop=0}"
                                     Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                     Padding="20"
-                                    StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                    BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
+                                    Style="{StaticResource CozySoftPanel}">
                                 <VerticalStackLayout Spacing="6">
                                     <Label Text="Sessions today"
                                            Style="{StaticResource EyebrowLabel}" />
@@ -726,12 +660,7 @@
 
                             <Border Grid.Row="{OnIdiom Phone=2, Desktop=1}"
                                     Padding="20"
-                                    StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
+                                    Style="{StaticResource CozyWarmPanel}">
                                 <VerticalStackLayout Spacing="6">
                                     <Label Text="Active tasks"
                                            Style="{StaticResource EyebrowLabel}" />
@@ -744,12 +673,7 @@
                             <Border Grid.Row="{OnIdiom Phone=3, Desktop=1}"
                                     Grid.Column="{OnIdiom Phone=0, Desktop=1}"
                                     Padding="20"
-                                    StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                    BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
+                                    Style="{StaticResource CozyWarmPanel}">
                                 <VerticalStackLayout Spacing="6">
                                     <Label Text="All sessions"
                                            Style="{StaticResource EyebrowLabel}" />
@@ -762,12 +686,7 @@
 
                         <Border Grid.Row="3"
                                 Padding="18"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozyWarmPanel}">
                             <Grid RowDefinitions="Auto,Auto"
                                   RowSpacing="10">
                                 <Label Text="Recent focus sessions"
@@ -823,7 +742,7 @@
                             IsVisible="False"
                             Opacity="0">
                     <Grid Padding="{OnIdiom Phone='22,22,22,28', Desktop='40,26,40,34'}"
-                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                           RowSpacing="14"
                           MaximumWidthRequest="720"
                           HorizontalOptions="Center"
@@ -840,12 +759,7 @@
 
                         <Border Grid.Row="1"
                                 Padding="18"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozySoftPanel}">
                             <Grid RowDefinitions="Auto,Auto,Auto"
                                   RowSpacing="12">
                                 <Label Text="Timer defaults"
@@ -949,14 +863,9 @@
 
                         <Border Grid.Row="2"
                                 Padding="18"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozyWarmPanel}">
                             <Grid ColumnDefinitions="*,Auto"
-                                  RowDefinitions="Auto,Auto"
+                                  RowDefinitions="Auto,Auto,Auto"
                                   RowSpacing="8">
                                 <Label Text="Notification sounds"
                                        Style="{StaticResource EyebrowLabel}" />
@@ -967,17 +876,19 @@
                                        Text="Play a soft voice cue when focus or break ends."
                                        FontSize="13"
                                        Style="{StaticResource SecondaryLabel}" />
+                                <Button Grid.Row="2"
+                                        Text="Test notification"
+                                        Command="{Binding TestNotificationCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Padding="14,10"
+                                        FontSize="12"
+                                        HorizontalOptions="Start" />
                             </Grid>
                         </Border>
 
                         <Border Grid.Row="3"
                                 Padding="18"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozyWarmPanel}">
                             <Grid RowDefinitions="Auto,Auto"
                                   RowSpacing="12">
                                 <Grid ColumnDefinitions="{OnIdiom Phone='*', Desktop='*,Auto,Auto'}"
@@ -1038,12 +949,7 @@
 
                         <Border Grid.Row="4"
                                 Padding="18"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                                BackgroundColor="{AppThemeBinding Light=#DFFFF3E4, Dark=#B82E231E}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
-                            </Border.StrokeShape>
+                                Style="{StaticResource CozySoftPanel}">
                             <Grid RowDefinitions="Auto,Auto,Auto"
                                   RowSpacing="10">
                                 <VerticalStackLayout Spacing="4">
@@ -1096,12 +1002,7 @@
                         MaximumWidthRequest="720"
                         HorizontalOptions="Center"
                         VerticalOptions="Center"
-                        StrokeThickness="1"
-                        Stroke="{AppThemeBinding Light={StaticResource PanelStrokeLight}, Dark={StaticResource PanelStrokeDark}}"
-                        BackgroundColor="{AppThemeBinding Light=#DFFFF7EC, Dark=#A82D231F}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="8" />
-                    </Border.StrokeShape>
+                        Style="{StaticResource CozyWarmPanel}">
                     <VerticalStackLayout Spacing="8"
                                          HorizontalOptions="Center">
                         <Label x:Name="PlaceholderTitle"
