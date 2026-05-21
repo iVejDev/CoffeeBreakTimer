@@ -79,6 +79,46 @@ After a debug build, run:
 CoffeeBreakTimer.App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\CoffeeBreakTimer.App.exe
 ```
 
+## Windows Release Exe
+
+To create a shareable Windows release folder:
+
+```powershell
+.\scripts\publish-windows-release.ps1
+```
+
+The generated executable is placed in:
+
+```text
+CoffeeBreakTimer.App\bin\Release\net9.0-windows10.0.19041.0\win10-x64\publish\CoffeeBreakTimer.App.exe
+```
+
+Share the entire `publish` folder as a zip file. The receiver should extract the zip and double-click `CoffeeBreakTimer.App.exe`. Do not send only the `.exe`, because the app needs the generated dependency files in the same folder.
+
+More details are available in [docs/windows-release.md](docs/windows-release.md).
+
+## Windows MSIX Installer
+
+To create a Windows installer package:
+
+```powershell
+.\scripts\publish-windows-msix.ps1
+```
+
+The generated package is placed under:
+
+```text
+CoffeeBreakTimer.App\bin\Release\net9.0-windows10.0.19041.0\win10-x64\AppPackages
+```
+
+MSIX packages must be signed. The script creates or reuses a local self-signed test certificate and exports it to:
+
+```text
+build\certificates\CoffeeBreakerTimer_TestCertificate.cer
+```
+
+More details are available in [docs/windows-msix-installer.md](docs/windows-msix-installer.md).
+
 ## Local Data
 
 The app stores tasks and focus statistics locally on the device. Settings such as ambience, volume, and notification preferences are stored using MAUI preferences.

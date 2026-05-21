@@ -24,3 +24,13 @@ x86/
 *.log
 *.tmp
 .github
+
+## Local signing files
+build/certificates/
+*.pfx
+
+## Local release bundles
+dist/
+
+## Local school presentation files
+docs/presentation/
