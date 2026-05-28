@@ -14,6 +14,7 @@ x86/
 [Oo]bj/
 
 ## Visual Studio cache/options
+.idea/
 .vscode/
 *.cachefile
 *.lscache
